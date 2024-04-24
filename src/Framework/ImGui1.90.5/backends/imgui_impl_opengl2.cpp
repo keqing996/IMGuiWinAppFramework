@@ -62,7 +62,7 @@
 #define GL_SILENCE_DEPRECATION
 #include <OpenGL/gl.h>
 #else
-#include <GL/gl.h>
+#include <gl/GL.h>
 #endif
 
 struct ImGui_ImplOpenGL2_Data
