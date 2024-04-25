@@ -3,12 +3,20 @@ cmake_minimum_required(VERSION 3.22)
 project(IMGuiWinAppFramework)
 
 set(CMAKE_CXX_STANDARD 20)
-set(TARGET_NAME imguiwinappframework)
 
-# helper lib
-file (GLOB_RECURSE FRAMEWORK_SRC src/Infra/*.cpp)
-add_library(${TARGET_NAME} STATIC ${FRAMEWORK_SRC})
-target_include_directories(${TARGET_NAME} PUBLIC src/)
+file (GLOB_RECURSE INFRA_SRC
+        ./src/Infra/*.cpp
+)
 
-# test proj
-# add_subdirectory()
+file (GLOB_RECURSE FRAMEWORK_SRC
+        ./src/Framework/*.cpp
+)
+
+add_executable(demo_window
+        ${INFRA_SRC}
+        ${FRAMEWORK_SRC}
+        ./example/Main.cpp
+)
+
+target_include_directories(demo_window PUBLIC src/)
+
