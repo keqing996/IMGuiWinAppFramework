@@ -4,13 +4,8 @@ project(IMGuiWinAppFramework)
 
 set(CMAKE_CXX_STANDARD 20)
 
-file (GLOB_RECURSE INFRA_SRC
-        ./src/Infra/*.cpp
-)
-
-file (GLOB_RECURSE FRAMEWORK_SRC
-        ./src/Framework/*.cpp
-)
+file (GLOB_RECURSE IMGUI_APP_SRC ./src/ImGuiWinApp/*.cpp)
+file (GLOB_RECURSE NATIVE_ src/ImGuiWinApp/*.cpp)
 
 add_executable(demo_window
         ${INFRA_SRC}
