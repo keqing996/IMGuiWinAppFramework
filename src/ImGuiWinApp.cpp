@@ -1,10 +1,10 @@
-#include <Infra/Windows/WindowsDefine.hpp>
+#include <NativeWinApp/WindowsInclude.h>
 #include <imgui.h>
 #include <backends/imgui_impl_win32.h>
 #include <backends/imgui_impl_dx11.h>
-#include "ImGuiWinApp.h"
-#include "Font/JetBrainsMono-Bold.h"
-#include "Font/JetBrainsMono-Regular.h"
+#include "ImGuiWinAppFramework/ImGuiWinApp.h"
+#include "ImGuiWinAppFramework/Font/JetBrainsMono-Bold.h"
+#include "ImGuiWinAppFramework/Font/JetBrainsMono-Regular.h"
 
 #pragma comment(lib, "d3d11.lib")
 
@@ -15,7 +15,7 @@ static bool ImGui_ImplWin32_WndProcHandler_Wrapper(void* hWnd, uint32_t msg, voi
     return ImGui_ImplWin32_WndProcHandler((HWND)hWnd, msg, (LPARAM)lParam, (WPARAM)wParam);
 }
 
-namespace Infra
+namespace IMWinApp
 {
     ImGuiWinApp::ImGuiWinApp(int width, int height, const std::string& title, int style)
         : _window(width, height, title, style)
@@ -281,17 +281,17 @@ namespace Infra
         ::PostMessageW(hWnd, WM_CLOSE, 0, 0);
     }
 
-    void ImGuiWinApp::SetOnEventHandler(const std::function<bool(const WindowEvent&, bool*)>& handler)
+    void ImGuiWinApp::SetOnEventHandler(const std::function<bool(const NWA::WindowEvent&, bool*)>& handler)
     {
         _onEventHandler = handler;
     }
 
-    void ImGuiWinApp::DefaultOnEventHandler(const WindowEvent& event, bool* breakAppLoop)
+    void ImGuiWinApp::DefaultOnEventHandler(const NWA::WindowEvent& event, bool* breakAppLoop)
     {
-        *breakAppLoop = event.type == Infra::WindowEvent::Type::Close;
+        *breakAppLoop = event.type == NWA::WindowEvent::Type::Close;
     }
 
-    Window& ImGuiWinApp::GetNativeWindow()
+    NWA::Window& ImGuiWinApp::GetNativeWindow()
     {
         return _window;
     }

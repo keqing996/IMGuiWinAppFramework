@@ -5,7 +5,7 @@
 
 #include <array>
 
-namespace Infra
+namespace IMWinApp
 {
 
 inline static std::array<unsigned char, 277828> JetBrainsMono_Bold =
