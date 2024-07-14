@@ -170,16 +170,15 @@ namespace IMWinApp
             bool breakAppLoop = false;
             while (_window.HasEvent())
             {
-                auto event = _window.PopEvent();
+                auto allEvent = _window.PopAllEvent();
 
-                if (_onEventHandler)
+                for (auto& event: allEvent)
                 {
-                    bool handled = _onEventHandler(event, &breakAppLoop);
-                    if (handled)
+                    if (_onEventHandler && _onEventHandler(event, &breakAppLoop))
                         continue;
-                }
 
-                DefaultOnEventHandler(event, &breakAppLoop);
+                    DefaultOnEventHandler(event, &breakAppLoop);
+                }
             }
 
             if (breakAppLoop)

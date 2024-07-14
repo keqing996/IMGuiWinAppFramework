@@ -23,7 +23,7 @@ namespace IMWinApp
         };
 
     public:
-        ImGuiWinApp(int width, int height, const std::string& title, int style = (int)NWA::WindowStyle::Default);
+        ImGuiWinApp(int width, int height, const std::string& title, int style = NWA::WindowStyleDefault);
         ~ImGuiWinApp();
 
     public:
