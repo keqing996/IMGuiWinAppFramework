@@ -5,8 +5,6 @@ project (IMGuiWinAppFramework)
 set (CMAKE_CXX_STANDARD 20)
 set (LIBRARY_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/artifacts/${CMAKE_CXX_COMPILER_ID}/${CMAKE_BUILD_TYPE}/)
 
-add_subdirectory(thirdparty/NativeWinAppFramework)
-
 file (GLOB_RECURSE IMGUI_APP_FRAMEWORK_SRC ./src/*.cpp)
 file (GLOB_RECURSE IMGUI_SRC
         ./thirdparty/imgui/imgui.cpp
@@ -20,7 +18,6 @@ file (GLOB_RECURSE IMGUI_SRC
 add_library                 (imgui_win_app_framework STATIC ${IMGUI_APP_FRAMEWORK_SRC} ${IMGUI_SRC})
 target_include_directories  (imgui_win_app_framework PUBLIC ./include/)
 target_include_directories  (imgui_win_app_framework PUBLIC ./thirdparty/imgui/)
-target_link_libraries       (imgui_win_app_framework PUBLIC cpp_native_win_app)
 
 option (ENABLE_IMGUI_WIN_APP_DEMO OFF)
 

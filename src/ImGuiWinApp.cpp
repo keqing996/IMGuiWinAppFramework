@@ -1,10 +1,10 @@
-#include <NativeWinApp/WindowsInclude.h>
+#include "ImApp/NativeWindow/WindowsInclude.h"
 #include <imgui.h>
 #include <backends/imgui_impl_win32.h>
 #include <backends/imgui_impl_dx11.h>
-#include "ImGuiWinAppFramework/ImGuiWinApp.h"
-#include "ImGuiWinAppFramework/Font/JetBrainsMono-Bold.h"
-#include "ImGuiWinAppFramework/Font/JetBrainsMono-Regular.h"
+#include "ImApp/ImGuiWinApp.h"
+#include "ImApp/Font/JetBrainsMono-Bold.h"
+#include "ImApp/Font/JetBrainsMono-Regular.h"
 
 #pragma comment(lib, "d3d11.lib")
 
