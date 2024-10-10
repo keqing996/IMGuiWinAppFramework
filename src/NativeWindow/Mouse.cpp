@@ -1,8 +1,8 @@
-#include "ImApp/NativeWindow/WindowsInclude.h"
+#include "ImApp/Utility/WindowsInclude.h"
 #include "ImApp/NativeWindow/Window.h"
 #include "ImApp/NativeWindow/Mouse.h"
 
-namespace NWA
+namespace NativeWindow
 {
     bool Mouse::IsButtonPressed(Button button)
     {

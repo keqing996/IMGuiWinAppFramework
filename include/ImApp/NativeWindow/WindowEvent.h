@@ -3,7 +3,7 @@
 #include "Keyboard.h"
 #include "Mouse.h"
 
-namespace NWA
+namespace NativeWindow
 {
     struct WindowEvent
     {

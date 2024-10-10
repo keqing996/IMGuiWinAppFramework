@@ -4,15 +4,15 @@
 #include <memory>
 #include <functional>
 #include <d3d11.h>
-#include <NativeWinApp/Utility.h>
-#include <NativeWinApp/Window.h>
+#include "Utility/NonCopyable.h"
+#include "NativeWindow/Window.h"
 
 class ImFont;
 class ImFontAtlas;
 
 namespace IMWinApp
 {
-    class ImGuiWinApp final : NWA::NonCopyable
+    class ImGuiWinApp final : Utility::NonCopyable
     {
     public:
         enum class TickStage
@@ -23,15 +23,15 @@ namespace IMWinApp
         };
 
     public:
-        ImGuiWinApp(int width, int height, const std::string& title, int style = NWA::WindowStyleDefault);
+        ImGuiWinApp(int width, int height, const std::string& title, int style = NativeWindow::WindowStyleDefault);
         ~ImGuiWinApp();
 
     public:
-        void SetOnEventHandler(const std::function<bool(const NWA::WindowEvent&, bool*)>& handler);
+        void SetOnEventHandler(const std::function<bool(const NativeWindow::WindowEvent&, bool*)>& handler);
         void AppLoop();
         void EnableVSync(bool enable);
         void CloseWindow();
-        NWA::Window& GetNativeWindow();
+        NativeWindow::Window& GetNativeWindow();
 
         // Font
         int GetNormalFontSize();
@@ -60,12 +60,12 @@ namespace IMWinApp
         void D3d11Clear();
         bool ImGuiSetUp();
         void ImGuiClear();
-        void DefaultOnEventHandler(const NWA::WindowEvent& e, bool* breakAppLoop);
+        void DefaultOnEventHandler(const NativeWindow::WindowEvent& e, bool* breakAppLoop);
 
     private:
         // Window
-        NWA::Window _window;
-        std::function<bool(const NWA::WindowEvent&, bool*)> _onEventHandler = nullptr;
+        NativeWindow::Window _window;
+        std::function<bool(const NativeWindow::WindowEvent&, bool*)> _onEventHandler = nullptr;
 
         // D3d11
         ID3D11Device* _pD3dDevice = nullptr;

@@ -1,11 +1,11 @@
 
 #include <vector>
-#include "ImApp/NativeWindow/Utility.h"
-#include "ImApp/NativeWindow/WindowsInclude.h"
+#include "ImApp/Utility/WindowsInclude.h"
+#include "ImApp/Utility/String.h"
 
-namespace NWA
+namespace Utility
 {
-    std::string Utility::WideStringToString(const std::wstring& wStr)
+    std::string WideStringToString(const std::wstring& wStr)
     {
         const wchar_t* wideStr = wStr.c_str();
         if (wideStr == nullptr)
@@ -25,7 +25,7 @@ namespace NWA
         return std::string(charBuffer.data());
     }
 
-    std::wstring Utility::StringToWideString(const std::string& str)
+    std::wstring StringToWideString(const std::string& str)
     {
         const char* multiBytesStr = str.c_str();
         if (multiBytesStr == nullptr)

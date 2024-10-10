@@ -7,7 +7,7 @@
 #include <optional>
 #include <functional>
 
-namespace NWA
+namespace NativeWindow
 {
     enum class WindowStyle: int
     {

@@ -1,7 +1,7 @@
-#include "ImApp/NativeWindow/WindowsInclude.h"
+#include "ImApp/Utility/WindowsInclude.h"
 #include "ImApp/NativeWindow/Window.h"
 
-namespace NWA
+namespace NativeWindow
 {
     void Window::WindowEventProcess(uint32_t message, void* wpara, void* lpara)
     {

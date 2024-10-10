@@ -1,12 +1,13 @@
 
-#include "ImApp/NativeWindow/WindowsInclude.h"
-#include "ImApp/NativeWindow/Utility.h"
+#include "ImApp/Utility/WindowsInclude.h"
+#include "ImApp/Utility/ScopeGuard.h"
+#include "ImApp/Utility/String.h"
 #include "ImApp/NativeWindow/Window.h"
 #include "ImApp/NativeWindow/Glad/Gl.h"
 
 #pragma comment(lib, "opengl32.lib")
 
-namespace NWA
+namespace NativeWindow
 {
     class Support
     {
@@ -71,7 +72,7 @@ namespace NWA
             if (pShcodeDll == nullptr)
                 return false;
 
-            ScopeGuard pShcodeDllReleaseGuard = [&pShcodeDll]()
+            Utility::ScopeGuard pShcodeDllReleaseGuard = [&pShcodeDll]()
             {
                 ::FreeLibrary(pShcodeDll);
             };
@@ -103,7 +104,7 @@ namespace NWA
             if (pUser32Dll == nullptr)
                 return false;
 
-            ScopeGuard pShcodeDllReleaseGuard = [&pUser32Dll]()
+            Utility::ScopeGuard pShcodeDllReleaseGuard = [&pUser32Dll]()
             {
                 ::FreeLibrary(pUser32Dll);
             };

@@ -1,9 +1,8 @@
 #include <vector>
-#include "ImApp/NativeWindow/Utility.h"
-#include "ImApp/NativeWindow/WindowsInclude.h"
+#include "ImApp/Utility/WindowsInclude.h"
 #include "ImApp/NativeWindow/Resource.h"
 
-namespace NWA
+namespace NativeWindow
 {
     template<>
     DataResource Resource::LoadResource(int id)

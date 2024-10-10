@@ -2,7 +2,7 @@
 
 #include <utility>
 
-namespace NWA
+namespace NativeWindow
 {
     class Mouse
     {

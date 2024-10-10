@@ -1,6 +1,6 @@
 #pragma once
 
-namespace NWA
+namespace NativeWindow
 {
 
     class Keyboard

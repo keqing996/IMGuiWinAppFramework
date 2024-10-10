@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-namespace NWA
+namespace NativeWindow
 {
     struct DataResource
     {

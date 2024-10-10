@@ -1,8 +1,9 @@
 #include <shobjidl.h>
-#include "ImApp/NativeWindow/Utility.h"
+#include "ImApp/Utility/String.h"
+#include "ImApp/Utility/ScopeGuard.h"
 #include "ImApp/NativeWindow/FileDialog.h"
 
-namespace NWA
+namespace NativeWindow
 {
     struct FileTypeFilterW
     {
@@ -27,13 +28,13 @@ namespace NWA
         if (FAILED(pFileDialog->GetResult(&pShellItem)))
             return std::nullopt;
 
-        ScopeGuard guardShellItem = [&]{ pShellItem->Release(); };
+        Utility::ScopeGuard guardShellItem = [&]{ pShellItem->Release(); };
         {
             PWSTR filePath;
             if (FAILED(pShellItem->GetDisplayName(SIGDN_FILESYSPATH, &filePath)))
                 return std::nullopt;
 
-            ScopeGuard guardFilePath = [&] { CoTaskMemFree(filePath); };
+            Utility::ScopeGuard guardFilePath = [&] { CoTaskMemFree(filePath); };
             {
                 return Utility::WideStringToString(filePath);
             }
@@ -45,13 +46,13 @@ namespace NWA
         if (FAILED(CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE)))
             return std::nullopt;
 
-        ScopeGuard guardInit = [] { CoUninitialize(); };
+        Utility::ScopeGuard guardInit = [] { CoUninitialize(); };
         {
             IFileDialog* pFileDialog;
             if (FAILED(CoCreateInstance(CLSID_FileOpenDialog, nullptr, CLSCTX_ALL, IID_IFileOpenDialog, reinterpret_cast<void**>(&pFileDialog))))
                 return std::nullopt;
 
-            ScopeGuard guardFileDialogRaw = [&] { pFileDialog->Release(); };
+            Utility::ScopeGuard guardFileDialogRaw = [&] { pFileDialog->Release(); };
             {
                 // title
                 const auto titleMsgW = Utility::StringToWideString(titleMsg);
@@ -89,13 +90,13 @@ namespace NWA
         if (FAILED(CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE)))
             return std::nullopt;
 
-        ScopeGuard guardInit = [] { CoUninitialize(); };
+        Utility::ScopeGuard guardInit = [] { CoUninitialize(); };
         {
             IFileDialog* pFileDialog;
             if (FAILED(CoCreateInstance(CLSID_FileSaveDialog, nullptr, CLSCTX_ALL, IID_IFileSaveDialog, reinterpret_cast<void**>(&pFileDialog))))
                 return std::nullopt;
 
-            ScopeGuard guardFileDialogRaw = [&] { pFileDialog->Release(); };
+            Utility::ScopeGuard guardFileDialogRaw = [&] { pFileDialog->Release(); };
             {
                 // title
                 const auto titleMsgW = Utility::StringToWideString(titleMsg);
@@ -138,13 +139,13 @@ namespace NWA
         if (FAILED(CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE)))
             return std::nullopt;
 
-        ScopeGuard guardInit = [] { CoUninitialize(); };
+        Utility::ScopeGuard guardInit = [] { CoUninitialize(); };
         {
             IFileDialog* pFileDialog;
             if (FAILED(CoCreateInstance(CLSID_FileOpenDialog, nullptr, CLSCTX_ALL, IID_IFileOpenDialog, reinterpret_cast<void**>(&pFileDialog))))
                 return std::nullopt;
 
-            ScopeGuard guardFileDialogRaw = [&] { pFileDialog->Release(); };
+            Utility::ScopeGuard guardFileDialogRaw = [&] { pFileDialog->Release(); };
             {
                 // title
                 const auto titleMsgW = Utility::StringToWideString(titleMsg);

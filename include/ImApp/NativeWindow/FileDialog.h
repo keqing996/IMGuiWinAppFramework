@@ -4,7 +4,7 @@
 #include <optional>
 #include <vector>
 
-namespace NWA
+namespace NativeWindow
 {
     class FileDialog
     {
