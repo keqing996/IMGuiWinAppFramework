@@ -23,7 +23,7 @@ namespace IMWinApp
         };
 
     public:
-        ImGuiWinApp(int width, int height, const std::string& title, int style = NativeWindow::WindowStyleDefault);
+        ImGuiWinApp(int width, int height, const std::string& title, int style = NativeWindow::DefaultWindowStyle, Backend backend = Backend::D3d11);
         ~ImGuiWinApp();
 
     public:

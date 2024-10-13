@@ -10,6 +10,7 @@ namespace IMWinApp
     class ImGuiBackend
     {
     public:
+        ImGuiBackend() = default;
         virtual ~ImGuiBackend() = default;
 
         static std::unique_ptr<ImGuiBackend> Create(Backend backend);
@@ -22,8 +23,5 @@ namespace IMWinApp
         virtual void Draw() = 0;
         virtual void SwapBuffer(bool enableVsync) = 0;
         virtual void SetClearColor(const Utility::Color& color) = 0;
-
-    private:
-        ImGuiBackend() = default;
     };
 }

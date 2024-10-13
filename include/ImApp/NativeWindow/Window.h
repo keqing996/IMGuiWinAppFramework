@@ -18,6 +18,8 @@ namespace NativeWindow
         Default = HaveTitleBar | HaveResize | HaveClose
     };
 
+    const int DefaultWindowStyle = static_cast<int>(WindowStyle::Default);
+
     class Window
     {
     public:
@@ -40,6 +42,7 @@ namespace NativeWindow
         auto ClearWindowEventProcessFunction() -> void;
         auto HasEvent() -> bool;
         auto PopEvent() -> WindowEvent;
+        auto PopAllEvent() -> std::vector<WindowEvent>;
 
         auto GetSize() -> std::pair<int, int>;
         auto SetSize(int width, int height) -> void;

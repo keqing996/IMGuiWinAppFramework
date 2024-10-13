@@ -429,6 +429,20 @@ namespace NativeWindow
         return result;
     }
 
+    auto Window::PopAllEvent() -> std::vector<WindowEvent>
+    {
+        std::vector<WindowEvent> result;
+        result.reserve(_eventQueue.size());
+
+        while (!_eventQueue.empty())
+        {
+            result.push_back(_eventQueue.front());
+            _eventQueue.pop();
+        }
+
+        return result;
+    }
+
     auto Window::PushEvent(const WindowEvent& event) -> void
     {
         _eventQueue.push(event);

@@ -14,8 +14,9 @@ static bool ImGui_ImplWin32_WndProcHandler_Wrapper(void* hWnd, uint32_t msg, voi
 
 namespace IMWinApp
 {
-    ImGuiWinApp::ImGuiWinApp(int width, int height, const std::string& title, int style)
+    ImGuiWinApp::ImGuiWinApp(int width, int height, const std::string& title, int style, Backend backend)
         : _window(width, height, title, style)
+        , _pBackend(ImGuiBackend::Create(backend))
     {
         _pBackend->SetupDevice(_window.GetSystemHandle());
 
@@ -194,17 +195,17 @@ namespace IMWinApp
         ::PostMessageW(hWnd, WM_CLOSE, 0, 0);
     }
 
-    void ImGuiWinApp::SetOnEventHandler(const std::function<bool(const NWA::WindowEvent&, bool*)>& handler)
+    void ImGuiWinApp::SetOnEventHandler(const std::function<bool(const NativeWindow::WindowEvent&, bool*)>& handler)
     {
         _onEventHandler = handler;
     }
 
-    void ImGuiWinApp::DefaultOnEventHandler(const NWA::WindowEvent& event, bool* breakAppLoop)
+    void ImGuiWinApp::DefaultOnEventHandler(const NativeWindow::WindowEvent& event, bool* breakAppLoop)
     {
-        *breakAppLoop = event.type == NWA::WindowEvent::Type::Close;
+        *breakAppLoop = event.type == NativeWindow::WindowEvent::Type::Close;
     }
 
-    NWA::Window& ImGuiWinApp::GetNativeWindow()
+    NativeWindow::Window& ImGuiWinApp::GetNativeWindow()
     {
         return _window;
     }
