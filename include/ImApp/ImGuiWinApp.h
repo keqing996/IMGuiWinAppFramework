@@ -29,9 +29,12 @@ namespace IMWinApp
     public:
         void SetOnEventHandler(const std::function<bool(const NativeWindow::WindowEvent&, bool*)>& handler);
         void AppLoop();
-        void EnableVSync(bool enable);
         void CloseWindow();
         NativeWindow::Window& GetNativeWindow();
+
+        // Option
+        void SetVSyncEnable(bool enable);
+        bool GetVSyncEnable() const;
 
         // Font
         int GetNormalFontSize();
@@ -69,9 +72,6 @@ namespace IMWinApp
 
         // Backend
         std::unique_ptr<ImGuiBackend> _pBackend = nullptr;
-
-        // Option
-        bool _enableVSync = true;
 
         // Updater
         std::function<void(ImGuiWinApp&)> _preFrameTick = nullptr;

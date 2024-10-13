@@ -109,9 +109,9 @@ namespace IMWinApp
         _clearColor[3] = color.GetAlpha();
     }
 
-    void ImGuiBackendD3d11::SwapBuffer(bool enableVsync)
+    void ImGuiBackendD3d11::SwapBuffer()
     {
-        if (enableVsync)
+        if (_enableVSync)
             _pSwapChain->Present(1, 0);
         else
             _pSwapChain->Present(0, 0);

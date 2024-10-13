@@ -18,4 +18,14 @@ namespace IMWinApp
                 return std::make_unique<ImGuiBackendD3d11>();
         }
     }
+
+    void ImGuiBackend::SetVSyncEnable(bool enable)
+    {
+        _enableVSync = enable;
+    }
+
+    bool ImGuiBackend::GetVSyncEnable() const
+    {
+        return _enableVSync;
+    }
 }

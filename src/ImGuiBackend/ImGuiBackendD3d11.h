@@ -15,7 +15,7 @@ namespace IMWinApp
         void NewFrame() override;
         void Draw() override;
         void SetClearColor(const Utility::Color& color) override;
-        void SwapBuffer(bool enableVsync) override;
+        void SwapBuffer() override;
 
     private:
         std::array<float, 4> _clearColor;

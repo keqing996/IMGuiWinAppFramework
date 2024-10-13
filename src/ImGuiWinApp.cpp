@@ -131,13 +131,18 @@ namespace IMWinApp
             _pBackend->Draw();
 
             // Swap back buffer
-            _pBackend->SwapBuffer(_enableVSync);
+            _pBackend->SwapBuffer();
         }
     }
 
-    void ImGuiWinApp::EnableVSync(bool enable)
+    void ImGuiWinApp::SetVSyncEnable(bool enable)
     {
-        _enableVSync = enable;
+        _pBackend->SetVSyncEnable(enable);
+    }
+
+    bool ImGuiWinApp::GetVSyncEnable() const
+    {
+        return _pBackend->GetVSyncEnable();
     }
 
     ImFont* ImGuiWinApp::GetFontRegularNormal() const

@@ -21,7 +21,14 @@ namespace IMWinApp
         virtual void Clear() = 0;
         virtual void NewFrame() = 0;
         virtual void Draw() = 0;
-        virtual void SwapBuffer(bool enableVsync) = 0;
+        virtual void SwapBuffer() = 0;
         virtual void SetClearColor(const Utility::Color& color) = 0;
+
+    public:
+        void SetVSyncEnable(bool enable);
+        bool GetVSyncEnable() const;
+
+    protected:
+        bool _enableVSync = true;
     };
 }
