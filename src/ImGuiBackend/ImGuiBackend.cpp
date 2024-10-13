@@ -8,6 +8,6 @@ namespace IMWinApp
 {
     std::unique_ptr<ImGuiBackend> ImGuiBackend::Create(Backend backend)
     {
-        
+
     }
 }

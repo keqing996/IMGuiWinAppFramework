@@ -8,9 +8,14 @@ namespace IMWinApp
     class ImGuiBackendD3d11: public ImGuiBackend
     {
     public:
+        void SetupDevice(void* windowHandle) override;
+        void SetupImGui() override;
+        void Clear() override;
+        void NewFrame() override;
+        void EndFrame() override;
+        void Draw() override;
 
     private:
-        bool D3d11SetUp();
         void D3d11Clear();
         bool ImGuiSetUp();
         void ImGuiClear();

@@ -3,7 +3,7 @@
 #include <string>
 #include <memory>
 #include <functional>
-#include <d3d11.h>
+#include "ImGuiBackend/ImGuiBackend.h"
 #include "Utility/NonCopyable.h"
 #include "NativeWindow/Window.h"
 
@@ -56,12 +56,19 @@ namespace IMWinApp
         }
 
     private:
+        void ImGuiInitConfig();
+        void ImGuiInitFrontend();
+        void ImGuiInitBackend();
+        void ImGuiInitFont();
         void DefaultOnEventHandler(const NativeWindow::WindowEvent& e, bool* breakAppLoop);
 
     private:
         // Window
         NativeWindow::Window _window;
         std::function<bool(const NativeWindow::WindowEvent&, bool*)> _onEventHandler = nullptr;
+
+        // Backend
+        std::unique_ptr<ImGuiBackend> _pBackend = nullptr;
 
         // Option
         bool _enableVSync = true;
