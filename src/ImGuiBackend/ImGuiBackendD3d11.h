@@ -1,6 +1,7 @@
 #pragma once
 
 #include <d3d11.h>
+#include <array>
 #include "ImApp/ImGuiBackend/ImGuiBackend.h"
 
 namespace IMWinApp
@@ -12,15 +13,13 @@ namespace IMWinApp
         void SetupImGui() override;
         void Clear() override;
         void NewFrame() override;
-        void EndFrame() override;
         void Draw() override;
+        void SetClearColor(const Utility::Color& color) override;
+        void SwapBuffer(bool enableVsync) override;
 
     private:
-        void D3d11Clear();
-        bool ImGuiSetUp();
-        void ImGuiClear();
+        std::array<float, 4> _clearColor;
 
-    private:
         ID3D11Device* _pD3dDevice = nullptr;
         ID3D11DeviceContext* _pD3dDeviceContext = nullptr;
         IDXGISwapChain* _pSwapChain = nullptr;

@@ -61,29 +61,59 @@ namespace IMWinApp
 
     void ImGuiBackendD3d11::Clear()
     {
+        ImGui_ImplDX11_Shutdown();
+
+        if (_pMainRenderTargetView)
+        {
+            _pMainRenderTargetView->Release();
+            _pMainRenderTargetView = nullptr;
+        }
+
+        if (_pSwapChain)
+        {
+            _pSwapChain->Release();
+            _pSwapChain = nullptr;
+        }
+
+        if (_pD3dDeviceContext)
+        {
+            _pD3dDeviceContext->Release();
+            _pD3dDeviceContext = nullptr;
+        }
+
+        if (_pD3dDevice)
+        {
+            _pD3dDevice->Release();
+            _pD3dDevice = nullptr;
+        }
     }
 
     void ImGuiBackendD3d11::NewFrame()
     {
-    }
-
-    void ImGuiBackendD3d11::EndFrame()
-    {
+        ImGui_ImplDX11_NewFrame();
     }
 
     void ImGuiBackendD3d11::Draw()
     {
+        _pD3dDeviceContext->OMSetRenderTargets(1, &_pMainRenderTargetView, nullptr);
+        _pD3dDeviceContext->ClearRenderTargetView(_pMainRenderTargetView, _clearColor.data());
+
+        ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
     }
 
-    void ImGuiBackendD3d11::D3d11Clear()
+    void ImGuiBackendD3d11::SetClearColor(const Utility::Color& color)
     {
+        _clearColor[0] = color.GetRed();
+        _clearColor[1] = color.GetGreen();
+        _clearColor[2] = color.GetBlue();
+        _clearColor[3] = color.GetAlpha();
     }
 
-    bool ImGuiBackendD3d11::ImGuiSetUp()
+    void ImGuiBackendD3d11::SwapBuffer(bool enableVsync)
     {
-    }
-
-    void ImGuiBackendD3d11::ImGuiClear()
-    {
+        if (enableVsync)
+            _pSwapChain->Present(1, 0);
+        else
+            _pSwapChain->Present(0, 0);
     }
 }

@@ -1,12 +1,9 @@
 #include "ImApp/Utility/WindowsInclude.h"
 #include <imgui.h>
 #include <backends/imgui_impl_win32.h>
-#include <backends/imgui_impl_dx11.h>
 #include "ImApp/ImGuiWinApp.h"
 #include "ImApp/Font/JetBrainsMono-Bold.h"
 #include "ImApp/Font/JetBrainsMono-Regular.h"
-
-#pragma comment(lib, "d3d11.lib")
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -30,37 +27,12 @@ namespace IMWinApp
         _window.SetWindowEventProcessFunction(ImGui_ImplWin32_WndProcHandler_Wrapper);
     }
 
-    void ImGuiWinApp::D3d11Clear()
-    {
-        if (_pMainRenderTargetView)
-        {
-            _pMainRenderTargetView->Release();
-            _pMainRenderTargetView = nullptr;
-        }
-
-        if (_pSwapChain)
-        {
-            _pSwapChain->Release();
-            _pSwapChain = nullptr;
-        }
-
-        if (_pD3dDeviceContext)
-        {
-            _pD3dDeviceContext->Release();
-            _pD3dDeviceContext = nullptr;
-        }
-
-        if (_pD3dDevice)
-        {
-            _pD3dDevice->Release();
-            _pD3dDevice = nullptr;
-        }
-    }
-
     ImGuiWinApp::~ImGuiWinApp()
     {
-        ImGuiClear();
-        D3d11Clear();
+        _pBackend->Clear();
+
+        ImGui_ImplWin32_Shutdown();
+        ImGui::DestroyContext();
     }
 
     void ImGuiWinApp::ImGuiInitConfig()
@@ -109,13 +81,6 @@ namespace IMWinApp
         _pFontBoldLarge = CreateImGuiFont(JetBrainsMono_Bold.data(),JetBrainsMono_Bold.size(), LARGE_FONT_SIZE, false);
     }
 
-    void ImGuiWinApp::ImGuiClear()
-    {
-        ImGui_ImplDX11_Shutdown();
-        ImGui_ImplWin32_Shutdown();
-        ImGui::DestroyContext();
-    }
-
     void ImGuiWinApp::AppLoop()
     {
         while (true)
@@ -145,7 +110,8 @@ namespace IMWinApp
                 _preFrameTick(*this);
 
             // ImGui new frame setup
-            ImGui_ImplDX11_NewFrame();
+            _pBackend->NewFrame();
+
             ImGui_ImplWin32_NewFrame();
             ImGui::NewFrame();
 
@@ -160,19 +126,11 @@ namespace IMWinApp
             if (_postFrameTick)
                 _postFrameTick(*this);
 
-            // Clear color
-            static const float CLEAR_COLOR[4] = {0.75f, 0.75f, 0.75f, 1.00f };
-            _pD3dDeviceContext->OMSetRenderTargets(1, &_pMainRenderTargetView, nullptr);
-            _pD3dDeviceContext->ClearRenderTargetView(_pMainRenderTargetView, CLEAR_COLOR);
-
-            // ImGui draw
-            ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+            // Draw
+            _pBackend->Draw();
 
             // Swap back buffer
-            if (_enableVSync)
-                _pSwapChain->Present(1, 0);
-            else
-                _pSwapChain->Present(0, 0);
+            _pBackend->SwapBuffer(_enableVSync);
         }
     }
 

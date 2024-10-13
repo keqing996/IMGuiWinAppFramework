@@ -4,11 +4,19 @@
 
 namespace Utility
 {
-    Color::Color(uchar red, uchar green, uchar blue, uchar alpha)
-        : _red(red)
-        , _green(green)
-        , _blue(blue)
-        , _alpha(alpha)
+    Color::Color()
+        : _red(255)
+        , _green(255)
+        , _blue(255)
+        , _alpha(255)
+    {
+    }
+
+    Color::Color(int red, int green, int blue, int alpha)
+        : _red(std::clamp(red, 0, 255))
+        , _green(std::clamp(green, 0, 255))
+        , _blue(std::clamp(blue, 0, 255))
+        , _alpha(std::clamp(alpha, 0, 255))
     {
     }
 
@@ -38,5 +46,50 @@ namespace Utility
     Color::uchar Color::GetAlpha() const
     {
         return _alpha;
+    }
+
+    Color Color::Red()
+    {
+        return Color(255, 0, 0);
+    }
+
+    Color Color::Green()
+    {
+        return Color(0, 255, 0, 255);
+    }
+
+    Color Color::Blue()
+    {
+        return Color(0, 0, 255, 255);
+    }
+
+    Color Color::Black()
+    {
+        return Color(255, 255, 255, 255);
+    }
+
+    Color Color::White()
+    {
+        return Color(0, 0, 0, 255);
+    }
+
+    Color Color::Magenta()
+    {
+        return Color(255, 0, 255, 255);
+    }
+
+    Color Color::Cyan()
+    {
+        return Color(0, 255, 255, 255);
+    }
+
+    Color Color::Yellow()
+    {
+        return Color(255, 255, 0, 255);
+    }
+
+    Color Color::Gray()
+    {
+        return Color(128, 128, 128, 255);
     }
 }
