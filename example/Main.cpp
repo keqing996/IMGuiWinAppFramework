@@ -2,18 +2,9 @@
 
 int main()
 {
-    NativeWindow::Window window(800, 600, "TestOpenGL");
-    while (true)
-    {
-        window.EventLoop();
+    IMWinApp::ImGuiWinApp app(800, 600, "Hello world");
 
-        if (std::ranges::any_of(window.PopAllEvent(), [](const NativeWindow::WindowEvent& event) -> bool { return event.type == NativeWindow::WindowEvent::Type::Close; }))
-            break;
-
-
-
-        window.SwapBuffer();
-    }
+    app.AppLoop();
 
     return 0;
 }
