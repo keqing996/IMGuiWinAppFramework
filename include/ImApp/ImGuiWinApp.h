@@ -56,22 +56,12 @@ namespace IMWinApp
         }
 
     private:
-        bool D3d11SetUp();
-        void D3d11Clear();
-        bool ImGuiSetUp();
-        void ImGuiClear();
         void DefaultOnEventHandler(const NativeWindow::WindowEvent& e, bool* breakAppLoop);
 
     private:
         // Window
         NativeWindow::Window _window;
         std::function<bool(const NativeWindow::WindowEvent&, bool*)> _onEventHandler = nullptr;
-
-        // D3d11
-        ID3D11Device* _pD3dDevice = nullptr;
-        ID3D11DeviceContext* _pD3dDeviceContext = nullptr;
-        IDXGISwapChain* _pSwapChain = nullptr;
-        ID3D11RenderTargetView* _pMainRenderTargetView = nullptr;
 
         // Option
         bool _enableVSync = true;
