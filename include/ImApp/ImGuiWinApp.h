@@ -35,6 +35,7 @@ namespace IMWinApp
         // Option
         void SetVSyncEnable(bool enable);
         bool GetVSyncEnable() const;
+        void SetClearColor(const Utility::Color& color);
 
         // Font
         int GetNormalFontSize();

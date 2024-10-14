@@ -18,7 +18,7 @@ namespace IMWinApp
         void SwapBuffer() override;
 
     private:
-        std::array<float, 4> _clearColor;
+        std::array<float, 4> _clearColor = { 0.75f, 0.75f, 0.75f, 1.00f };
 
         ID3D11Device* _pD3dDevice = nullptr;
         ID3D11DeviceContext* _pD3dDeviceContext = nullptr;

@@ -145,6 +145,11 @@ namespace IMWinApp
         return _pBackend->GetVSyncEnable();
     }
 
+    void ImGuiWinApp::SetClearColor(const Utility::Color& color)
+    {
+        _pBackend->SetClearColor(color);
+    }
+
     ImFont* ImGuiWinApp::GetFontRegularNormal() const
     {
         return _pFontRegularNormal;
