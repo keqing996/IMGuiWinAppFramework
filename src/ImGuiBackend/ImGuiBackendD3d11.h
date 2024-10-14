@@ -9,9 +9,10 @@ namespace IMWinApp
     class ImGuiBackendD3d11: public ImGuiBackend
     {
     public:
-        void SetupDevice(void* windowHandle) override;
+        void SetupDevice() override;
         void SetupImGui() override;
-        void Clear() override;
+        void ClearImGui() override;
+        void ClearDevice() override;
         void NewFrame() override;
         void Draw() override;
         void SetClearColor(const Utility::Color& color) override;

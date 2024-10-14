@@ -13,6 +13,7 @@ file (GLOB_RECURSE IMGUI_SRC
         ./thirdparty/imgui/imgui_widgets.cpp
         ./thirdparty/imgui/backends/imgui_impl_win32.cpp
         ./thirdparty/imgui/backends/imgui_impl_dx11.cpp
+        ./thirdparty/imgui/backends/imgui_impl_opengl3.cpp
 )
 
 add_library                 (imgui_win_app_framework STATIC ${IMGUI_APP_FRAMEWORK_SRC} ${IMGUI_SRC})

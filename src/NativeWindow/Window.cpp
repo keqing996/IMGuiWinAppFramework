@@ -199,12 +199,7 @@ namespace NativeWindow
         SetCursorVisible(true);
         ::ReleaseCapture();
 
-        // Release openGL
-        if (_hGLContext)
-        {
-            ::wglMakeCurrent(reinterpret_cast<HDC>(_hDeviceHandle), nullptr);
-            ::wglDeleteContext(reinterpret_cast<HGLRC>(_hGLContext));
-        }
+        ReleaseOpenGLContext();
 
         if (_hDeviceHandle)
             ::ReleaseDC(reinterpret_cast<HWND>(_hWindow), reinterpret_cast<HDC>(_hDeviceHandle));
@@ -506,6 +501,15 @@ namespace NativeWindow
 
         _hGLContext = ::wglCreateContext(hDeviceHandle);
         ::wglMakeCurrent(hDeviceHandle, reinterpret_cast<HGLRC>(_hGLContext));
+    }
+
+    auto Window::ReleaseOpenGLContext() -> void
+    {
+        if (_hGLContext)
+        {
+            ::wglMakeCurrent(reinterpret_cast<HDC>(_hDeviceHandle), nullptr);
+            ::wglDeleteContext(reinterpret_cast<HGLRC>(_hGLContext));
+        }
     }
 
     auto Window::SwapBuffer() -> void

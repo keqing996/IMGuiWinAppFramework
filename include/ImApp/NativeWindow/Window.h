@@ -36,6 +36,7 @@ namespace NativeWindow
     public:
         auto EventLoop() -> void;
         auto CreateOpenGLContext() -> void;
+        auto ReleaseOpenGLContext() -> void;
         auto SwapBuffer() -> void;
         auto WindowEventProcess(uint32_t message, void* wpara, void* lpara) -> void;
         auto SetWindowEventProcessFunction(const std::function<bool(void*, uint32_t, void*, void*)>& f) -> void;

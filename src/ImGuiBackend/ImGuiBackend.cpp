@@ -6,17 +6,28 @@
 
 namespace IMWinApp
 {
-    std::unique_ptr<ImGuiBackend> ImGuiBackend::Create(Backend backend)
+    std::unique_ptr<ImGuiBackend> ImGuiBackend::Create(NativeWindow::Window* pWindow, Backend backend)
     {
+        std::unique_ptr<ImGuiBackend> pResult;
+
         switch (backend)
         {
             case Backend::D3d11:
-                return std::make_unique<ImGuiBackendD3d11>();
+                pResult = std::make_unique<ImGuiBackendD3d11>();
             case Backend::OpenGL:
+                pResult = std::make_unique<ImGuiBackendOpenGL>();
             case Backend::Vulkan:
             default:
-                return std::make_unique<ImGuiBackendD3d11>();
+                pResult = std::make_unique<ImGuiBackendD3d11>();
         }
+
+        pResult->SetWindow(pWindow);
+        return pResult;
+    }
+
+    void ImGuiBackend::SetWindow(NativeWindow::Window* pWindow)
+    {
+        _pWindow = pWindow;
     }
 
     void ImGuiBackend::SetVSyncEnable(bool enable)

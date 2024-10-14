@@ -1,12 +1,13 @@
 #include "ImGuiBackendD3d11.h"
 #include <backends/imgui_impl_dx11.h>
+
 #pragma comment(lib, "d3d11.lib")
 
 namespace IMWinApp
 {
-    void ImGuiBackendD3d11::SetupDevice(void* windowHandle)
+    void ImGuiBackendD3d11::SetupDevice()
     {
-        HWND hWnd = static_cast<HWND>(windowHandle);
+        HWND hWnd = static_cast<HWND>(_pWindow->GetSystemHandle());
 
         // Setup swap chain
         DXGI_SWAP_CHAIN_DESC sd;
@@ -59,10 +60,13 @@ namespace IMWinApp
         ImGui_ImplDX11_Init(_pD3dDevice, _pD3dDeviceContext);
     }
 
-    void ImGuiBackendD3d11::Clear()
+    void ImGuiBackendD3d11::ClearImGui()
     {
         ImGui_ImplDX11_Shutdown();
+    }
 
+    void ImGuiBackendD3d11::ClearDevice()
+    {
         if (_pMainRenderTargetView)
         {
             _pMainRenderTargetView->Release();

@@ -21,18 +21,19 @@ namespace IMWinApp
 {
     ImGuiWinApp::~ImGuiWinApp()
     {
-        _pBackend->Clear();
-
+        _pBackend->ClearImGui();
         ImGui_ImplWin32_Shutdown();
         ImGui::DestroyContext();
+
+        _pBackend->ClearDevice();
     }
 
     void ImGuiWinApp::InitWindow(int width, int height, const std::string& title, int style, Backend backend)
     {
         _pWindow = std::make_unique<NativeWindow::Window>(width, height, title, style);
 
-        _pBackend = ImGuiBackend::Create(backend);
-        _pBackend->SetupDevice(_pWindow->GetSystemHandle());
+        _pBackend = ImGuiBackend::Create(_pWindow.get(), backend);
+        _pBackend->SetupDevice();
 
         ImGuiInitConfig();
         ImGuiInitFrontend();
