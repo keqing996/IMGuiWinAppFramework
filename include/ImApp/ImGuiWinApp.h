@@ -12,27 +12,20 @@ class ImFontAtlas;
 
 namespace IMWinApp
 {
-    class ImGuiWinApp final : Utility::NonCopyable
+    class ImGuiWinApp : Utility::NonCopyable
     {
     public:
-        enum class TickStage
-        {
-            PreFrame,
-            OnFrame,
-            PostFrame,
-        };
-
-    public:
-        ImGuiWinApp(int width, int height, const std::string& title, int style = NativeWindow::DefaultWindowStyle, Backend backend = Backend::D3d11);
+        ImGuiWinApp() = default;
         ~ImGuiWinApp();
 
     public:
-        void SetOnEventHandler(const std::function<bool(const NativeWindow::WindowEvent&, bool*)>& handler);
-        void AppLoop();
+        void InitWindow(int width, int height, const std::string& title, int style = NativeWindow::DefaultWindowStyle, Backend backend = Backend::D3d11);
+        void Loop();
         void CloseWindow();
-        NativeWindow::Window& GetNativeWindow();
+        NativeWindow::Window* GetNativeWindow();
 
         // Option
+        void SetOnEventHandler(const std::function<bool(const NativeWindow::WindowEvent&, bool*)>& handler);
         void SetVSyncEnable(bool enable);
         bool GetVSyncEnable() const;
         void SetClearColor(const Utility::Color& color);
@@ -47,42 +40,29 @@ namespace IMWinApp
         ImFont* GetFontBoldNormal() const;
         ImFont* GetFontBoldLarge() const;
 
-    public:
-        template<TickStage stage>
-        void SetTickFunction(const std::function<void(ImGuiWinApp&)>& tickFunction)
-        {
-            if constexpr (stage == TickStage::PreFrame)
-                _preFrameTick = tickFunction;
-            else if constexpr (stage == TickStage::OnFrame)
-                _onFrameTick = tickFunction;
-            else if constexpr (stage == TickStage::PostFrame)
-                _postFrameTick = tickFunction;
-        }
+    protected:
+        virtual void PreTick();
+        virtual void Tick();
+        virtual void PostTick();
 
     private:
         void ImGuiInitConfig();
         void ImGuiInitFrontend();
         void ImGuiInitBackend();
         void ImGuiInitFont();
-        void DefaultOnEventHandler(const NativeWindow::WindowEvent& e, bool* breakAppLoop);
 
     private:
         // Window
-        NativeWindow::Window _window;
+        std::unique_ptr<NativeWindow::Window> _pWindow = nullptr;
         std::function<bool(const NativeWindow::WindowEvent&, bool*)> _onEventHandler = nullptr;
 
         // Backend
         std::unique_ptr<ImGuiBackend> _pBackend = nullptr;
 
-        // Updater
-        std::function<void(ImGuiWinApp&)> _preFrameTick = nullptr;
-        std::function<void(ImGuiWinApp&)> _onFrameTick = nullptr;
-        std::function<void(ImGuiWinApp&)> _postFrameTick = nullptr;
-
         // Font
         static constexpr int NORMAL_FONT_SIZE = 16;
         static constexpr int LARGE_FONT_SIZE = 20;
-        std::unique_ptr<ImFontAtlas> _pSharedImGuiFonts = nullptr;
+        std::shared_ptr<ImFontAtlas> _pSharedImGuiFonts = nullptr;
         ImFont* _pFontRegularNormal = nullptr;
         ImFont* _pFontRegularLarge = nullptr;
         ImFont* _pFontBoldNormal = nullptr;

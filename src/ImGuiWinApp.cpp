@@ -12,22 +12,13 @@ static bool ImGui_ImplWin32_WndProcHandler_Wrapper(void* hWnd, uint32_t msg, voi
     return ImGui_ImplWin32_WndProcHandler((HWND)hWnd, msg, (LPARAM)lParam, (WPARAM)wParam);
 }
 
+static void DefaultOnEventHandler(const NativeWindow::WindowEvent& event, bool* breakAppLoop)
+{
+    *breakAppLoop = event.type == NativeWindow::WindowEvent::Type::Close;
+}
+
 namespace IMWinApp
 {
-    ImGuiWinApp::ImGuiWinApp(int width, int height, const std::string& title, int style, Backend backend)
-        : _window(width, height, title, style)
-        , _pBackend(ImGuiBackend::Create(backend))
-    {
-        _pBackend->SetupDevice(_window.GetSystemHandle());
-
-        ImGuiInitConfig();
-        ImGuiInitFrontend();
-        ImGuiInitBackend();
-        ImGuiInitFont();
-
-        _window.SetWindowEventProcessFunction(ImGui_ImplWin32_WndProcHandler_Wrapper);
-    }
-
     ImGuiWinApp::~ImGuiWinApp()
     {
         _pBackend->Clear();
@@ -36,12 +27,27 @@ namespace IMWinApp
         ImGui::DestroyContext();
     }
 
+    void ImGuiWinApp::InitWindow(int width, int height, const std::string& title, int style, Backend backend)
+    {
+        _pWindow = std::make_unique<NativeWindow::Window>(width, height, title, style);
+
+        _pBackend = ImGuiBackend::Create(backend);
+        _pBackend->SetupDevice(_pWindow->GetSystemHandle());
+
+        ImGuiInitConfig();
+        ImGuiInitFrontend();
+        ImGuiInitBackend();
+        ImGuiInitFont();
+
+        _pWindow->SetWindowEventProcessFunction(ImGui_ImplWin32_WndProcHandler_Wrapper);
+    }
+
     void ImGuiWinApp::ImGuiInitConfig()
     {
         IMGUI_CHECKVERSION();
 
         // Prepare font atlas
-        _pSharedImGuiFonts = std::make_unique<ImFontAtlas>();
+        _pSharedImGuiFonts = std::make_shared<ImFontAtlas>();
 
         // ImGui context
         ImGui::CreateContext(_pSharedImGuiFonts.get());
@@ -60,7 +66,7 @@ namespace IMWinApp
 
     void ImGuiWinApp::ImGuiInitFrontend()
     {
-        ImGui_ImplWin32_Init((HWND)_window.GetSystemHandle());
+        ImGui_ImplWin32_Init((HWND)_pWindow->GetSystemHandle());
     }
 
     void ImGuiWinApp::ImGuiInitBackend()
@@ -71,7 +77,7 @@ namespace IMWinApp
     void ImGuiWinApp::ImGuiInitFont()
     {
         // Scale
-        HWND hWnd = (HWND)_window.GetSystemHandle();
+        HWND hWnd = (HWND)_pWindow->GetSystemHandle();
         float dpiScale = ImGui_ImplWin32_GetDpiScaleForHwnd(reinterpret_cast<HWND>(hWnd));
         ImGui::GetStyle().ScaleAllSizes(dpiScale);
 
@@ -82,17 +88,17 @@ namespace IMWinApp
         _pFontBoldLarge = CreateImGuiFont(JetBrainsMono_Bold.data(),JetBrainsMono_Bold.size(), LARGE_FONT_SIZE, false);
     }
 
-    void ImGuiWinApp::AppLoop()
+    void ImGuiWinApp::Loop()
     {
         while (true)
         {
             // Win32 message loop
-            _window.EventLoop();
+            _pWindow->EventLoop();
 
             bool breakAppLoop = false;
-            while (_window.HasEvent())
+            while (_pWindow->HasEvent())
             {
-                auto allEvent = _window.PopAllEvent();
+                auto allEvent = _pWindow->PopAllEvent();
 
                 for (auto& event: allEvent)
                 {
@@ -106,26 +112,18 @@ namespace IMWinApp
             if (breakAppLoop)
                 break;
 
-            // Pre frame tick
-            if (_preFrameTick)
-                _preFrameTick(*this);
-
             // ImGui new frame setup
             _pBackend->NewFrame();
-
             ImGui_ImplWin32_NewFrame();
             ImGui::NewFrame();
 
-            // On frame tick
-            if (_onFrameTick)
-                _onFrameTick(*this);
+            // Tick
+            PreTick();
+            Tick();
+            PostTick();
 
             // ImGui render
             ImGui::Render();
-
-            // On frame tick
-            if (_postFrameTick)
-                _postFrameTick(*this);
 
             // Draw
             _pBackend->Draw();
@@ -170,9 +168,21 @@ namespace IMWinApp
         return _pFontBoldLarge;
     }
 
+    void ImGuiWinApp::PreTick()
+    {
+    }
+
+    void ImGuiWinApp::Tick()
+    {
+    }
+
+    void ImGuiWinApp::PostTick()
+    {
+    }
+
     ImFont* ImGuiWinApp::CreateImGuiFont(void* fontData, int fontDataSize, int fontSize, bool transferDataOwnership)
     {
-        HWND hWnd = (HWND)_window.GetSystemHandle();
+        HWND hWnd = static_cast<HWND>(_pWindow->GetSystemHandle());
         float dpiScale = ImGui_ImplWin32_GetDpiScaleForHwnd(reinterpret_cast<HWND>(hWnd));
 
         ImFontConfig tempConfig;
@@ -189,7 +199,7 @@ namespace IMWinApp
 
     ImFont* ImGuiWinApp::CreateImGuiFont(const std::string& ttfPath, int fontSize)
     {
-        HWND hWnd = (HWND)_window.GetSystemHandle();
+        HWND hWnd = static_cast<HWND>(_pWindow->GetSystemHandle());
         float dpiScale = ImGui_ImplWin32_GetDpiScaleForHwnd(reinterpret_cast<HWND>(hWnd));
 
         return _pSharedImGuiFonts->AddFontFromFileTTF(
@@ -201,7 +211,7 @@ namespace IMWinApp
 
     void ImGuiWinApp::CloseWindow()
     {
-        HWND hWnd = (HWND)_window.GetSystemHandle();
+        HWND hWnd = static_cast<HWND>(_pWindow->GetSystemHandle());
         ::PostMessageW(hWnd, WM_CLOSE, 0, 0);
     }
 
@@ -210,14 +220,9 @@ namespace IMWinApp
         _onEventHandler = handler;
     }
 
-    void ImGuiWinApp::DefaultOnEventHandler(const NativeWindow::WindowEvent& event, bool* breakAppLoop)
+    NativeWindow::Window* ImGuiWinApp::GetNativeWindow()
     {
-        *breakAppLoop = event.type == NativeWindow::WindowEvent::Type::Close;
-    }
-
-    NativeWindow::Window& ImGuiWinApp::GetNativeWindow()
-    {
-        return _window;
+        return _pWindow.get();
     }
 
     int ImGuiWinApp::GetNormalFontSize()

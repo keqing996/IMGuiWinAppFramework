@@ -1,10 +1,15 @@
 #include "ImApp/ImGuiWinApp.h"
 
+class DemoWIndow: public IMWinApp::ImGuiWinApp
+{
+
+};
+
 int main()
 {
-    IMWinApp::ImGuiWinApp app(800, 600, "Hello world");
-
-    app.AppLoop();
+    DemoWIndow app;
+    app.InitWindow(800, 600, "Hello world");
+    app.Loop();
 
     return 0;
 }
