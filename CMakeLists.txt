@@ -18,6 +18,7 @@ file (GLOB_RECURSE IMGUI_SRC
 add_library                 (imgui_win_app_framework STATIC ${IMGUI_APP_FRAMEWORK_SRC} ${IMGUI_SRC})
 target_include_directories  (imgui_win_app_framework PUBLIC ./include/)
 target_include_directories  (imgui_win_app_framework PUBLIC ./thirdparty/imgui/)
+target_include_directories  (imgui_win_app_framework PUBLIC ./thirdparty/glad/)
 
 option (ENABLE_IMGUI_WIN_APP_DEMO OFF)
 

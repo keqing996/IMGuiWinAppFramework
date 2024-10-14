@@ -3,7 +3,7 @@
 #include "ImApp/Utility/ScopeGuard.h"
 #include "ImApp/Utility/String.h"
 #include "ImApp/NativeWindow/Window.h"
-#include "ImApp/NativeWindow/Glad/Gl.h"
+#include <glad/gl.h>
 
 #pragma comment(lib, "opengl32.lib")
 
