@@ -2,7 +2,7 @@
 
 #include <ranges>
 #include <vector>
-#include <ranges>
+#include <functional>
 #include "imgui.h"
 
 namespace IMWinApp::Layout
@@ -10,8 +10,7 @@ namespace IMWinApp::Layout
     class Component
     {
     public:
-        virtual void TickBegin() = 0;
-        virtual void TickEnd() = 0;
+        virtual void Tick() = 0;
     };
 
     class ComponentContainer: public Component
@@ -35,17 +34,18 @@ namespace IMWinApp::Layout
                 _children.erase(itr);
         }
 
-        void TickBegin() override
+        void Tick() final
         {
-            for (auto& itr : _children)
-                itr->TickBegin();
+            PreTick();
+
+            for (auto& child: _children)
+                child->Tick();
+
+            PostTick();
         }
 
-        void TickEnd() override
-        {
-            for (auto& itr : std::ranges::reverse_view(_children))
-                itr->TickEnd();
-        }
+        virtual void PreTick() = 0;
+        virtual void PostTick() = 0;
 
     private:
         std::vector<Component*> _children;
@@ -60,15 +60,13 @@ namespace IMWinApp::Layout
         {
         }
 
-        void TickBegin() override
+        void PreTick() override
         {
             ImGui::Begin(_name.c_str(), nullptr, _flags);
-            ComponentContainer::TickBegin();
         }
 
-        void TickEnd() override
+        void PostTick() override
         {
-            ComponentContainer::TickEnd();
             ImGui::End();
         }
 
@@ -77,5 +75,36 @@ namespace IMWinApp::Layout
         ImGuiWindowFlags _flags;
     };
 
+    class Button: public Component
+    {
+    public:
+        Button(const std::string& name, const std::function<void(void)>& callback)
+            : _name(name), _callback(callback)
+        {
+        }
 
+        void Tick() override
+        {
+            if (ImGui::Button(_name.c_str()))
+                _callback();
+        }
+
+    private:
+        std::string _name;
+        std::function<void(void)> _callback;
+    };
+
+    class Text: public Component
+    {
+    public:
+        explicit Text(const std::string& content): _content(content) {}
+
+        void Tick() override
+        {
+            ImGui::Text(_content.c_str());
+        }
+
+    private:
+        std::string _content;
+    };
 }
