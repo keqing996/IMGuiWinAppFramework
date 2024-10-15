@@ -15,13 +15,24 @@ namespace IMWinApp::Layout
 
     class ComponentContainer: public Component
     {
+        struct CompOperation
+        {
+            Component* pComp;
+            bool isAdd;
+        };
+
     public:
-        void AddComponent(Component* pComp)
+        ComponentContainer& AddComponent(Component* pComp)
         {
             if (pComp == nullptr)
-                return;
+                return *this;
 
-            _children.push_back(pComp);
+            if (_looping)
+                _waitingComp.push_back(CompOperation{pComp, true});
+            else
+                _children.push_back(pComp);
+
+            return *this;
         }
 
         void RemoveComponent(Component* pComp)
@@ -29,26 +40,79 @@ namespace IMWinApp::Layout
             if (pComp == nullptr)
                 return;
 
-            auto itr = std::ranges::find(_children, pComp);
-            if (itr != _children.end())
-                _children.erase(itr);
+            if (_looping)
+                _waitingComp.push_back(CompOperation{pComp, false});
+            else
+            {
+                auto itr = std::ranges::find(_children, pComp);
+                if (itr != _children.end())
+                    _children.erase(itr);
+            }
         }
 
         void Tick() final
         {
+            _looping = true;
+
             PreTick();
 
-            for (auto& child: _children)
-                child->Tick();
+            for (int i = 0; i < _children.size(); i++)
+            {
+                _children[i]->Tick();
+                if (i < _children.size() - 1)
+                    InternalTick();
+            }
 
             PostTick();
+
+            _looping = false;
+
+            FlushWaitingQueue();
         }
 
-        virtual void PreTick() = 0;
-        virtual void PostTick() = 0;
+        virtual void PreTick()
+        {
+        }
+
+        virtual void InternalTick()
+        {
+        }
+
+        virtual void PostTick()
+        {
+        }
 
     private:
+        void FlushWaitingQueue()
+        {
+            for (auto& compOp: _waitingComp)
+            {
+                if (compOp.isAdd)
+                    AddComponent(compOp.pComp);
+                else
+                    RemoveComponent(compOp.pComp);
+            }
+
+            _waitingComp.clear();
+        }
+
+    private:
+        bool _looping = false;
         std::vector<Component*> _children;
+        std::vector<CompOperation> _waitingComp;
+    };
+
+    class VerticalLayout: ComponentContainer
+    {
+    };
+
+    class HorizontalLayout: ComponentContainer
+    {
+    protected:
+        void InternalTick() override
+        {
+            ImGui::SameLine();
+        }
     };
 
     class Window: public ComponentContainer
@@ -98,6 +162,11 @@ namespace IMWinApp::Layout
     {
     public:
         explicit Text(const std::string& content): _content(content) {}
+
+        void SetText(const std::string& content)
+        {
+            _content = content;
+        }
 
         void Tick() override
         {
