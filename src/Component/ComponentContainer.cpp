@@ -7,7 +7,8 @@ namespace IMWinApp
 {
     ComponentContainer::ComponentContainer(std::initializer_list<Component*> initList)
     {
-
+        for (auto pComp: initList)
+            AddComponent(pComp);
     }
 
     ComponentContainer& ComponentContainer::AddComponent(Component* pComp)
@@ -17,27 +18,11 @@ namespace IMWinApp
 
         if (_looping)
             _waitingComp.push_back(CompOperation{
-                std::unique_ptr<Component>(pComp),
+                pComp,
                 true
             });
         else
             _children.push_back(std::unique_ptr<Component>(pComp));
-
-        return *this;
-    }
-
-    ComponentContainer& ComponentContainer::AddComponent(std::unique_ptr<Component>&& pComp)
-    {
-        if (pComp == nullptr)
-            return *this;
-
-        if (_looping)
-            _waitingComp.push_back(CompOperation{
-                std::move(pComp),
-                true
-            });
-        else
-            _children.push_back(pComp);
 
         return *this;
     }
@@ -49,16 +34,16 @@ namespace IMWinApp
 
         if (_looping)
             _waitingComp.push_back(CompOperation{
-                std::unique_ptr<Component>(pComp),
+                pComp,
                 false
             });
         else
         {
             auto itr = std::find(_children.begin(), _children.end(),
-                                 [pComp](const std::unique_ptr<Component>& uniquePtr) -> bool
-                                 {
-                                     return pComp == uniquePtr.get();
-                                 });
+                [pComp](const std::unique_ptr<Component>& uniquePtr) -> bool
+                {
+                    return pComp == uniquePtr.get();
+                });
             if (itr != _children.end())
                 _children.erase(itr);
         }
@@ -72,7 +57,7 @@ namespace IMWinApp
 
         for (int i = 0; i < _children.size(); i++)
         {
-            _children[i]->Tick();
+            _children[i]->UpdateView();
             if (i < _children.size() - 1)
                 InternalTick();
         }
@@ -89,21 +74,24 @@ namespace IMWinApp
         return _looping;
     }
 
-    const std::vector<Component*> ComponentContainer::GetChildren()
+    const std::vector<std::unique_ptr<Component>>& ComponentContainer::GetChildren()
     {
         return _children;
     }
 
     void ComponentContainer::PreTick()
     {
+        // do nothing
     }
 
     void ComponentContainer::InternalTick()
     {
+        // do nothing
     }
 
     void ComponentContainer::PostTick()
     {
+        // do nothing
     }
 
     void ComponentContainer::FlushWaitingQueue()
@@ -111,7 +99,7 @@ namespace IMWinApp
         for (auto& compOp: _waitingComp)
         {
             if (compOp.isAdd)
-                _children.push_back(std::move(compOp.pComp));
+                AddComponent(compOp.pComp);
             else
                 RemoveComponent(compOp.pComp);
         }

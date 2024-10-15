@@ -9,7 +9,7 @@ namespace IMWinApp
     {
         struct CompOperation
         {
-            std::unique_ptr<Component> pComp;
+            Component* pComp;
             bool isAdd;
         };
 
@@ -24,10 +24,9 @@ namespace IMWinApp
         virtual void PostTick();
 
         ComponentContainer& AddComponent(Component* pComp);
-        ComponentContainer& AddComponent(std::unique_ptr<Component>&& pComp);
         void RemoveComponent(Component* pComp);
         bool IsLooping() const;
-        const std::vector<Component*> GetChildren();
+        const std::vector<std::unique_ptr<Component>>& GetChildren();
 
     private:
         void FlushWaitingQueue();
@@ -35,6 +34,6 @@ namespace IMWinApp
     private:
         bool _looping = false;
         std::vector<std::unique_ptr<Component>> _children;
-        static std::vector<CompOperation> _waitingComp;
+        std::vector<CompOperation> _waitingComp;
     };
 }
