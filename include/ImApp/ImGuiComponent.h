@@ -2,6 +2,8 @@
 
 #include <ranges>
 #include <vector>
+#include <list>
+#include <memory>
 #include <functional>
 #include "imgui.h"
 
@@ -17,20 +19,30 @@ namespace IMWinApp::Layout
     {
         struct CompOperation
         {
-            Component* pComp;
+            std::unique_ptr<Component> pComp;
             bool isAdd;
         };
 
     public:
+        ComponentContainer() = default;
+
+        ComponentContainer(std::initializer_list<Component*> initList)
+        {
+
+        }
+
         ComponentContainer& AddComponent(Component* pComp)
         {
             if (pComp == nullptr)
                 return *this;
 
             if (_looping)
-                _waitingComp.push_back(CompOperation{pComp, true});
+                _waitingComp.push_back(CompOperation{
+                    std::unique_ptr<Component>(pComp),
+                    true
+                });
             else
-                _children.push_back(pComp);
+                _children.push_back(std::unique_ptr<Component>(pComp));
 
             return *this;
         }
@@ -41,10 +53,17 @@ namespace IMWinApp::Layout
                 return;
 
             if (_looping)
-                _waitingComp.push_back(CompOperation{pComp, false});
+                _waitingComp.push_back(CompOperation{
+                    std::unique_ptr<Component>(pComp),
+                    false
+                });
             else
             {
-                auto itr = std::ranges::find(_children, pComp);
+                auto itr = std::find(_children.begin(), _children.end(),
+                    [pComp](const std::unique_ptr<Component>& uniquePtr) -> bool
+                    {
+                        return pComp == uniquePtr.get();
+                    });
                 if (itr != _children.end())
                     _children.erase(itr);
             }
@@ -70,6 +89,16 @@ namespace IMWinApp::Layout
             FlushWaitingQueue();
         }
 
+        bool IsLooping() const
+        {
+            return _looping;
+        }
+
+        const std::vector<Component*> GetChildren()
+        {
+            return _children;
+        }
+
         virtual void PreTick()
         {
         }
@@ -88,7 +117,7 @@ namespace IMWinApp::Layout
             for (auto& compOp: _waitingComp)
             {
                 if (compOp.isAdd)
-                    AddComponent(compOp.pComp);
+                    _children.push_back(std::move(compOp.pComp));
                 else
                     RemoveComponent(compOp.pComp);
             }
@@ -98,7 +127,7 @@ namespace IMWinApp::Layout
 
     private:
         bool _looping = false;
-        std::vector<Component*> _children;
+        std::vector<std::unique_ptr<Component>> _children;
         std::vector<CompOperation> _waitingComp;
     };
 

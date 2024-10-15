@@ -1,8 +1,19 @@
 #include "ImApp/ImGuiWinApp.h"
 #include "ImApp/ImGuiComponent.h"
 
-class DemoWIndow: public IMWinApp::ImGuiWinApp
+using namespace IMWinApp;
+
+class DemoWindow: public ImGuiWinApp
 {
+public:
+    DemoWindow()
+    {
+
+    }
+
+    Layout::Window window;
+
+
 protected:
     void Tick() override
     {
@@ -39,7 +50,7 @@ protected:
 
 int main()
 {
-    DemoWIndow app;
+    DemoWindow app;
     app.InitWindow(800, 600, "Hello world", NativeWindow::DefaultWindowStyle, IMWinApp::Backend::OpenGL);
     app.Loop();
 
