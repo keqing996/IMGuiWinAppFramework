@@ -1,5 +1,5 @@
 #include "ImApp/ImGuiWinApp.h"
-#include "imgui.h"
+#include "ImApp/ImGuiComponent.h"
 
 class DemoWIndow: public IMWinApp::ImGuiWinApp
 {
