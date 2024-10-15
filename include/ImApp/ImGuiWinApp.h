@@ -50,6 +50,7 @@ namespace IMWinApp
         void ImGuiInitFrontend();
         void ImGuiInitBackend();
         void ImGuiInitFont();
+        void InitLocale();
 
     private:
         // Window

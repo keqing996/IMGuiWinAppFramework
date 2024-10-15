@@ -2,6 +2,9 @@
 #include <imgui.h>
 #include <backends/imgui_impl_win32.h>
 #include "ImApp/ImGuiWinApp.h"
+
+#include <locale>
+
 #include "ImApp/Font/JetBrainsMono-Bold.h"
 #include "ImApp/Font/JetBrainsMono-Regular.h"
 
@@ -39,6 +42,8 @@ namespace IMWinApp
         ImGuiInitFrontend();
         ImGuiInitBackend();
         ImGuiInitFont();
+
+        InitLocale();
 
         _pWindow->SetWindowEventProcessFunction(ImGui_ImplWin32_WndProcHandler_Wrapper);
     }
@@ -87,6 +92,11 @@ namespace IMWinApp
         _pFontRegularLarge = CreateImGuiFont(JetBrainsMono_Regular.data(),JetBrainsMono_Regular.size(), LARGE_FONT_SIZE, false);
         _pFontBoldNormal = CreateImGuiFont(JetBrainsMono_Bold.data(),JetBrainsMono_Bold.size(), NORMAL_FONT_SIZE, false);
         _pFontBoldLarge = CreateImGuiFont(JetBrainsMono_Bold.data(),JetBrainsMono_Bold.size(), LARGE_FONT_SIZE, false);
+    }
+
+    void ImGuiWinApp::InitLocale()
+    {
+        std::locale::global(std::locale("zh_CN.UTF8"));
     }
 
     void ImGuiWinApp::Loop()
