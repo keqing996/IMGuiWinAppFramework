@@ -4,7 +4,7 @@
 
 namespace IMWinApp
 {
-    class VerticalLayout: ComponentContainer
+    class VerticalLayout: public ComponentContainer
     {
     };
 }

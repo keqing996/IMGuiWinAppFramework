@@ -1,6 +1,4 @@
 
-#include <initializer_list>
-#include <memory>
 #include "ImApp/Component/ComponentContainer.h"
 
 namespace IMWinApp
@@ -39,7 +37,7 @@ namespace IMWinApp
             });
         else
         {
-            auto itr = std::find(_children.begin(), _children.end(),
+            auto itr = std::ranges::find_if(_children,
                 [pComp](const std::unique_ptr<Component>& uniquePtr) -> bool
                 {
                     return pComp == uniquePtr.get();

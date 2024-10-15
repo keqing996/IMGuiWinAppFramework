@@ -1,6 +1,8 @@
 #pragma once
 
 #include <vector>
+#include <memory>
+#include <initializer_list>
 #include "Component.h"
 
 namespace IMWinApp

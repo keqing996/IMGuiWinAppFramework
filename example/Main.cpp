@@ -1,22 +1,53 @@
+#include <format>
 #include "ImApp/ImGuiWinApp.h"
-#include "ImApp/ImGuiComponent.h"
+#include "ImApp/Component/Window.h"
+#include "ImApp/Component/Text.h"
+#include "ImApp/Component/Button.h"
+#include "ImApp/Component/HorizontalLayout.h"
+#include "imgui.h"
 
 using namespace IMWinApp;
 
 class DemoWindow: public ImGuiWinApp
 {
 public:
-    DemoWindow()
+    DemoWindow(): window("Hello, world!")
     {
+        ImGuiWindowFlags window_flags = 0;
+        window_flags |= ImGuiWindowFlags_NoTitleBar;
+        window_flags |= ImGuiWindowFlags_NoMove;
+        window_flags |= ImGuiWindowFlags_NoResize;
+        window_flags |= ImGuiWindowFlags_NoCollapse;
 
+        window.SetWindowFlags(window_flags);
+
+        auto pText1 = new Text("This is some useful text.");
+
+        auto pButton = new Button("Button", [this](){ counter++; });
+        pCounterText = new Text("counter");
+
+        auto pHorizontal = new HorizontalLayout();
+        pHorizontal->AddComponent(pButton);
+        pHorizontal->AddComponent(pCounterText);
+
+        pFrameText = new Text("frame");
+
+        window.AddComponent(pText1).AddComponent(pHorizontal).AddComponent(pFrameText);
     }
 
-    Layout::Window window;
+    Window window;
+    Text* pCounterText = nullptr;
+    Text* pFrameText = nullptr;
+    int counter = 0;
 
 
 protected:
     void Tick() override
     {
+        ImGuiIO& io = ImGui::GetIO();
+        pCounterText->SetText(std::format("counter = {}", counter));
+        pFrameText->SetText(std::format("Application average {:.3f} ms/frame ({:.1f} FPS)", 1000.0f / io.Framerate, io.Framerate));
+        /*
         ImGuiIO& io = ImGui::GetIO();
 
         static float f = 0.0f;
@@ -45,6 +76,9 @@ protected:
 
         ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
         ImGui::End();
+        */
+
+        window.UpdateView();
     }
 };
 

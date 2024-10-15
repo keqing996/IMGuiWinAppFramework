@@ -4,7 +4,7 @@
 
 namespace IMWinApp
 {
-    class HorizontalLayout: ComponentContainer
+    class HorizontalLayout: public ComponentContainer
     {
     protected:
         void InternalTick() override;
