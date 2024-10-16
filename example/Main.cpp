@@ -1,6 +1,7 @@
 #include <format>
 #include "ImApp/ImGuiWinApp.h"
 #include "ImApp/Component/Window.h"
+#include "ImApp/Component/SameLine.h"
 
 using namespace IMWinApp;
 
@@ -31,10 +32,15 @@ protected:
 
             ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
 
-            if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-                counter++;
-            ImGui::SameLine();
-            ImGui::Text("counter = %d", counter);
+            SameLine({
+                []() -> void {
+                    if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
+                        counter++;
+                },
+                []() -> void {
+                    ImGui::Text("counter = %d", counter);
+                }
+            });
 
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
         });

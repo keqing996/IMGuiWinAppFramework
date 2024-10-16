@@ -7,17 +7,8 @@ namespace IMWinApp
 {
     struct Window
     {
-        Window(const char* name, ImGuiWindowFlags flags, const std::function<void()>& impl)
-        {
-            ImGui::Begin(name, nullptr, flags);
+        Window(const char* name, ImGuiWindowFlags flags, const std::function<void()>& impl);
 
-            if (impl != nullptr)
-                impl();
-        }
-
-        ~Window()
-        {
-            ImGui::End();
-        }
+        ~Window();
     };
 }
