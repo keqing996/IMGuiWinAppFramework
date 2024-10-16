@@ -1,25 +1,23 @@
 #pragma once
 
+#include <functional>
 #include <imgui.h>
-#include <string>
-
-#include "ComponentContainer.h"
 
 namespace IMWinApp
 {
-    class Window: public ComponentContainer
+    struct Window
     {
-    public:
-        explicit Window(const std::string& name, ImGuiWindowFlags flags = 0);
+        Window(const char* name, ImGuiWindowFlags flags, const std::function<void()>& impl)
+        {
+            ImGui::Begin(name, nullptr, flags);
 
-        void PreTick() override;
-        void PostTick() override;
+            if (impl != nullptr)
+                impl();
+        }
 
-        void SetWindowFlags(ImGuiWindowFlags flags);
-        ImGuiWindowFlags GetWindowFlags() const;
-
-    private:
-        std::string _name;
-        ImGuiWindowFlags _flags;
+        ~Window()
+        {
+            ImGui::End();
+        }
     };
 }
