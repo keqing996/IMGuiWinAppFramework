@@ -38,11 +38,27 @@ protected:
                         counter++;
                 },
                 []() -> void {
+                    if (ImGui::SmallButton("SmallButton"))
+                        counter++;
+                },
+                []() -> void {
+                    if (ImGui::ArrowButton("ArrowButton", ImGuiDir_Up))
+                        counter++;
+                },
+                []() -> void {
                     ImGui::Text("counter = %d", counter);
                 }
             });
 
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+
+            ImGui::SeparatorText("SeparatorText");
+
+            ImGui::Bullet();
+            ImGui::Text("Bullet"); // auto same line
+
+            if (ImGui::RadioButton("RadioButton", false))
+                counter++;
         });
 
     }
