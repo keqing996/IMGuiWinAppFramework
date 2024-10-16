@@ -1,6 +1,10 @@
 .vs/
+.vscode/
 .idea/
 *.pdb
+
+# clangd
+.cache/ 
 
 # CMake generated files
 CMakeFiles/
