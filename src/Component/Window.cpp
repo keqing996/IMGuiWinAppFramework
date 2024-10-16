@@ -1,6 +1,6 @@
 #include "ImApp/Component/Window.h"
 
-namespace IMWinApp
+namespace ImApp
 {
     Window::Window(const char* name, ImGuiWindowFlags flags, const std::function<void()>& impl)
     {

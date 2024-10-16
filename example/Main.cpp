@@ -3,14 +3,17 @@
 #include "ImApp/Component/Window.h"
 #include "ImApp/Component/SameLine.h"
 
-using namespace IMWinApp;
+using namespace ImApp;
 
 class DemoWindow: public ImGuiWinApp
 {
 protected:
     void Tick() override
     {
-
+        ImGui::PushFont(_pFontRegularNormal);
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, {6, 12});
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, {2, 6});
+        ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 2);
 
         static float f = 0.0f;
         static int counter = 0;
@@ -61,13 +64,15 @@ protected:
                 counter++;
         });
 
+        ImGui::PopStyleVar(3);
+        ImGui::PopFont();
     }
 };
 
 int main()
 {
     DemoWindow app;
-    app.InitWindow(800, 600, "Hello world", NativeWindow::DefaultWindowStyle, IMWinApp::Backend::OpenGL);
+    app.InitWindow(800, 600, "Hello world", NativeWindow::DefaultWindowStyle, ImApp::Backend::OpenGL);
     app.Loop();
 
     return 0;

@@ -6,7 +6,7 @@
 #include "ImApp/Utility/Color.h"
 #include "ImGuiBackendType.h"
 
-namespace IMWinApp
+namespace ImApp
 {
     class ImGuiBackend
     {

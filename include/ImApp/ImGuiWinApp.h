@@ -10,7 +10,7 @@
 class ImFont;
 class ImFontAtlas;
 
-namespace IMWinApp
+namespace ImApp
 {
     class ImGuiWinApp : Utility::NonCopyable
     {
@@ -51,6 +51,7 @@ namespace IMWinApp
         void ImGuiInitBackend();
         void ImGuiInitFont();
         void InitLocale();
+        void InitStyle();
 
     private:
         // Window
@@ -64,6 +65,8 @@ namespace IMWinApp
         static constexpr int NORMAL_FONT_SIZE = 16;
         static constexpr int LARGE_FONT_SIZE = 20;
         std::shared_ptr<ImFontAtlas> _pSharedImGuiFonts = nullptr;
+
+    protected:
         ImFont* _pFontRegularNormal = nullptr;
         ImFont* _pFontRegularLarge = nullptr;
         ImFont* _pFontBoldNormal = nullptr;

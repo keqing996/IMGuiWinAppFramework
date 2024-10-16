@@ -3,7 +3,7 @@
 
 #pragma comment(lib, "d3d11.lib")
 
-namespace IMWinApp
+namespace ImApp
 {
     void ImGuiBackendD3d11::SetupDevice()
     {

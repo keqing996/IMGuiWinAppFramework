@@ -1,6 +1,6 @@
 #pragma once
 
-namespace IMWinApp
+namespace ImApp
 {
     enum class Backend
     {

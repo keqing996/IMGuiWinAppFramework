@@ -3,7 +3,7 @@
 #include <functional>
 #include <imgui.h>
 
-namespace IMWinApp
+namespace ImApp
 {
     struct Window
     {

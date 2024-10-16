@@ -4,7 +4,7 @@
 #include <array>
 #include "ImApp/ImGuiBackend/ImGuiBackend.h"
 
-namespace IMWinApp
+namespace ImApp
 {
     class ImGuiBackendD3d11: public ImGuiBackend
     {

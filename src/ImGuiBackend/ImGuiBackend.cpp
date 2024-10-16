@@ -4,7 +4,7 @@
 #include "ImGuiBackendOpenGL.h"
 #include "ImGuiBackendVulkan.h"
 
-namespace IMWinApp
+namespace ImApp
 {
     std::unique_ptr<ImGuiBackend> ImGuiBackend::Create(NativeWindow::Window* pWindow, Backend backend)
     {

@@ -1,7 +1,7 @@
 #include "ImGuiBackendVulkan.h"
 #include <backends/imgui_impl_vulkan.h>
 
-namespace IMWinApp
+namespace ImApp
 {
     void ImGuiBackendVulkan::SetupDevice()
     {

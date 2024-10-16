@@ -3,7 +3,7 @@
 #include <array>
 #include "ImApp/ImGuiBackend/ImGuiBackend.h"
 
-namespace IMWinApp
+namespace ImApp
 {
     class ImGuiBackendOpenGL: public ImGuiBackend
     {
