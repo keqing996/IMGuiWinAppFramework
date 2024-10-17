@@ -30,28 +30,26 @@ namespace ImApp
         bool GetVSyncEnable() const;
         void SetClearColor(const Utility::Color& color);
 
-        // Font
-        int GetNormalFontSize();
-        int GetLargeFontSize();
-        ImFont* CreateImGuiFont(void* fontData, int fontDataSize, int fontSize, bool transferDataOwnership = true);
-        ImFont* CreateImGuiFont(const std::string& ttfPath, int fontSize);
-        ImFont* GetFontRegularNormal() const;
-        ImFont* GetFontRegularLarge() const;
-        ImFont* GetFontBoldNormal() const;
-        ImFont* GetFontBoldLarge() const;
-
     protected:
         virtual void PreTick();
         virtual void Tick();
         virtual void PostTick();
 
+        // Dpi
+        float GetDpiScale();
+
+        // Font
+        int GetNormalFontSize();
+        int GetLargeFontSize();
+        ImFont* CreateImGuiFont(void* fontData, int fontDataSize, int fontSize, bool transferDataOwnership = true);
+        ImFont* CreateImGuiFont(const std::string& ttfPath, int fontSize);
+
     private:
         void ImGuiInitConfig();
         void ImGuiInitFrontend();
         void ImGuiInitBackend();
-        void ImGuiInitFont();
         void InitLocale();
-        void InitStyle();
+        void InitTheme();
 
     private:
         // Window
@@ -64,12 +62,5 @@ namespace ImApp
         // Font
         static constexpr int NORMAL_FONT_SIZE = 16;
         static constexpr int LARGE_FONT_SIZE = 20;
-        std::shared_ptr<ImFontAtlas> _pSharedImGuiFonts = nullptr;
-
-    protected:
-        ImFont* _pFontRegularNormal = nullptr;
-        ImFont* _pFontRegularLarge = nullptr;
-        ImFont* _pFontBoldNormal = nullptr;
-        ImFont* _pFontBoldLarge = nullptr;
     };
 }

@@ -10,10 +10,10 @@ class DemoWindow: public ImGuiWinApp
 protected:
     void Tick() override
     {
-        ImGui::PushFont(_pFontRegularNormal);
-        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, {6, 12});
-        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, {2, 6});
-        ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 2);
+        // ImGui::PushFont(_pFontRegularNormal);
+        // ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, {6, 12});
+        // ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, {2, 6});
+        // ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 2);
 
         static float f = 0.0f;
         static int counter = 0;
@@ -64,8 +64,8 @@ protected:
                 counter++;
         });
 
-        ImGui::PopStyleVar(3);
-        ImGui::PopFont();
+        // ImGui::PopStyleVar(3);
+        // ImGui::PopFont();
     }
 };
 

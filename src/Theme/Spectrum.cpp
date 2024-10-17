@@ -171,10 +171,13 @@ namespace ImApp::Spectrum
     unsigned int DarkColor::PURPLE600 = Utility::Color(0xA873E9);
     unsigned int DarkColor::PURPLE700 = Utility::Color(0xB483F0);
     
-    void LoadFont(float size)
+    void LoadFont(float size, float dpiScale)
     {
         ImGuiIO& io = ImGui::GetIO();
-        ImFont* font = io.Fonts->AddFontFromMemoryCompressedTTF(SourceSansProRegularCompressedData, SourceSansProRegularCompressedDataSize, size);
+        ImFont* font = io.Fonts->AddFontFromMemoryCompressedTTF(
+            SourceSansProRegularCompressedData,
+            SourceSansProRegularCompressedDataSize,
+            size * dpiScale);
         IM_ASSERT(font != nullptr);
         io.FontDefault = font;
     }
@@ -210,8 +213,8 @@ namespace ImApp::Spectrum
             colors[ImGuiCol_SliderGrab] = ImGui::ColorConvertU32ToFloat4(LightColor::GRAY700);
             colors[ImGuiCol_SliderGrabActive] = ImGui::ColorConvertU32ToFloat4(LightColor::GRAY800);
             colors[ImGuiCol_Button] = ImGui::ColorConvertU32ToFloat4(LightColor::GRAY75); // match default button to Spectrum's 'Action Button'.
-            colors[ImGuiCol_ButtonHovered] = ImGui::ColorConvertU32ToFloat4(LightColor::GRAY50);
-            colors[ImGuiCol_ButtonActive] = ImGui::ColorConvertU32ToFloat4(LightColor::GRAY200);
+            colors[ImGuiCol_ButtonHovered] = ImGui::ColorConvertU32ToFloat4(LightColor::GRAY200);
+            colors[ImGuiCol_ButtonActive] = ImGui::ColorConvertU32ToFloat4(LightColor::GRAY300);
             colors[ImGuiCol_Header] = ImGui::ColorConvertU32ToFloat4(LightColor::BLUE400);
             colors[ImGuiCol_HeaderHovered] = ImGui::ColorConvertU32ToFloat4(LightColor::BLUE500);
             colors[ImGuiCol_HeaderActive] = ImGui::ColorConvertU32ToFloat4(LightColor::BLUE600);
