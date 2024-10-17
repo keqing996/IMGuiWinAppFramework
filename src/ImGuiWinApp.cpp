@@ -4,9 +4,8 @@
 #include "ImApp/ImGuiWinApp.h"
 #include "ImApp/Theme/Spectrum.h"
 #include <locale>
+#include "ImApp/Font/SansProRegular.h"
 
-#include "ImApp/Font/JetBrainsMono-Bold.h"
-#include "ImApp/Font/JetBrainsMono-Regular.h"
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -87,8 +86,13 @@ namespace ImApp
         float dpiScale =  GetDpiScale();
 
         // Font
-        ImGui::GetIO().Fonts->Clear();
-        Spectrum::LoadFont(NORMAL_FONT_SIZE, dpiScale);
+        ImGuiIO& io = ImGui::GetIO();
+        io.Fonts->Clear();
+        io.FontDefault = CreateImGuiFont(
+            SourceSansProRegular.data(),
+            SourceSansProRegular.size(),
+            GetDefaultFontSize(),
+            false);
 
         // Style
         Spectrum::LoadStyle(false);
@@ -176,6 +180,11 @@ namespace ImApp
         return dpiScale;
     }
 
+    int ImGuiWinApp::GetDefaultFontSize()
+    {
+        return 16 * GetDpiScale();
+    }
+
     ImFont* ImGuiWinApp::CreateImGuiFont(void* fontData, int fontDataSize, int fontSize, bool transferDataOwnership)
     {
         HWND hWnd = static_cast<HWND>(_pWindow->GetSystemHandle());
@@ -221,16 +230,6 @@ namespace ImApp
     NativeWindow::Window* ImGuiWinApp::GetNativeWindow()
     {
         return _pWindow.get();
-    }
-
-    int ImGuiWinApp::GetNormalFontSize()
-    {
-        return NORMAL_FONT_SIZE;
-    }
-
-    int ImGuiWinApp::GetLargeFontSize()
-    {
-        return LARGE_FONT_SIZE;
     }
 
 }

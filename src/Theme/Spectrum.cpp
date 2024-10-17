@@ -1,7 +1,6 @@
 
 #include <imgui.h>
 #include "ImApp/Theme/Spectrum.h"
-#include "SansPro-Regular.h"
 
 namespace ImApp::Spectrum
 {
@@ -170,17 +169,6 @@ namespace ImApp::Spectrum
     unsigned int DarkColor::PURPLE500 = Utility::Color(0x9D64E1);
     unsigned int DarkColor::PURPLE600 = Utility::Color(0xA873E9);
     unsigned int DarkColor::PURPLE700 = Utility::Color(0xB483F0);
-    
-    void LoadFont(float size, float dpiScale)
-    {
-        ImGuiIO& io = ImGui::GetIO();
-        ImFont* font = io.Fonts->AddFontFromMemoryCompressedTTF(
-            SourceSansProRegularCompressedData,
-            SourceSansProRegularCompressedDataSize,
-            size * dpiScale);
-        IM_ASSERT(font != nullptr);
-        io.FontDefault = font;
-    }
 
     void LoadStyle(bool isDark)
     {

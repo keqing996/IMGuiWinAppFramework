@@ -1,5 +1,4 @@
 #pragma once
-#include <ImApp/Utility/Color.h>
 
 // Style from Adobe
 // https://github.com/adobe/imgui/blob/master/imgui_spectrum.cpp
@@ -12,10 +11,6 @@ namespace ImApp::Spectrum
     // around imgui.cpp and imgui_widgets.cpp.
     const float CHECKBOX_BORDER_SIZE = 2.0f;
     const float CHECKBOX_ROUNDING = 2.0f;
-
-    // Load SourceSansProRegular and sets it as a default font.
-    // You may want to call ImGui::GetIO().Fonts->Clear() before this
-    void LoadFont(float size = 16.0f, float dpiScale = 1.0f);
 
     // Sets the ImGui style to Spectrum
     void LoadStyle(bool isDark = false);

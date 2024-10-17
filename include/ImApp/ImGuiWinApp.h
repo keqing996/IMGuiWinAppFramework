@@ -39,8 +39,7 @@ namespace ImApp
         float GetDpiScale();
 
         // Font
-        int GetNormalFontSize();
-        int GetLargeFontSize();
+        int GetDefaultFontSize();
         ImFont* CreateImGuiFont(void* fontData, int fontDataSize, int fontSize, bool transferDataOwnership = true);
         ImFont* CreateImGuiFont(const std::string& ttfPath, int fontSize);
 
@@ -58,9 +57,5 @@ namespace ImApp
 
         // Backend
         std::unique_ptr<ImGuiBackend> _pBackend = nullptr;
-
-        // Font
-        static constexpr int NORMAL_FONT_SIZE = 16;
-        static constexpr int LARGE_FONT_SIZE = 20;
     };
 }
