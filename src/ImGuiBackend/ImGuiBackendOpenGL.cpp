@@ -2,6 +2,7 @@
 #include "ImApp/Utility/WindowsInclude.h"
 #include <backends/imgui_impl_opengl3.h>
 #include <glad/gl.h>
+#include <glad/wgl.h>
 
 namespace ImApp
 {
@@ -11,6 +12,7 @@ namespace ImApp
         HDC hDeviceHandle = ::GetDC(static_cast<HWND>(_pWindow->GetSystemHandle()));
 
         ::gladLoaderLoadGL();
+        ::gladLoaderLoadWGL(hDeviceHandle); // for wgl extension function
 
         PIXELFORMATDESCRIPTOR pfd =
         {
@@ -38,6 +40,9 @@ namespace ImApp
 
         _hGLContext = ::wglCreateContext(hDeviceHandle);
         ::wglMakeCurrent(hDeviceHandle, reinterpret_cast<HGLRC>(_hGLContext));
+
+        // refresh vsync
+        OnVSyncEnableSettle();
     }
 
     void ImGuiBackendOpenGL::ClearDevice()
@@ -90,5 +95,8 @@ namespace ImApp
 
     void ImGuiBackendOpenGL::OnVSyncEnableSettle()
     {
+        // wglSwapInterval is from WGL_EXT_swap_control, so maybe null
+        if (wglSwapIntervalEXT != nullptr)
+            ::wglSwapIntervalEXT(_enableVSync);
     }
 }
