@@ -177,7 +177,7 @@ protected:
 int main()
 {
     DemoWindow app;
-    app.InitWindow(800, 600, "Hello world", NativeWindow::DefaultWindowStyle, ImApp::Backend::D3d11);
+    app.InitWindow(800, 600, "Hello world", NativeWindow::DefaultWindowStyle, ImApp::Backend::OpenGL);
     app.SetVSyncEnable(true);
     app.Loop();
 

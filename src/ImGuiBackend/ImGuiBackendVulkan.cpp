@@ -34,4 +34,8 @@ namespace ImApp
     void ImGuiBackendVulkan::SwapBuffer()
     {
     }
+
+    void ImGuiBackendVulkan::OnVSyncEnableSettle()
+    {
+    }
 }

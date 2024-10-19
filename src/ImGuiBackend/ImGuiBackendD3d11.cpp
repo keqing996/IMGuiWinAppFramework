@@ -120,4 +120,9 @@ namespace ImApp
         else
             _pSwapChain->Present(0, 0);
     }
+
+    void ImGuiBackendD3d11::OnVSyncEnableSettle()
+    {
+        // do nothing
+    }
 }

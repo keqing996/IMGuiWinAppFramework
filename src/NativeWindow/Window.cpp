@@ -133,7 +133,6 @@ namespace NativeWindow
         , _mouseInsideWindow(false)
         , _hIcon(nullptr)
         , _hCursor(::LoadCursor(nullptr, IDC_ARROW))
-        , _hGLContext(nullptr)
     {
         // Fix dpi
         Support::FixProcessDpi();
@@ -199,8 +198,6 @@ namespace NativeWindow
         SetCursorVisible(true);
         ::ReleaseCapture();
 
-        ReleaseOpenGLContext();
-
         if (_hDeviceHandle)
             ::ReleaseDC(reinterpret_cast<HWND>(_hWindow), reinterpret_cast<HDC>(_hDeviceHandle));
 
@@ -247,7 +244,7 @@ namespace NativeWindow
         ::SetWindowPos(hWnd, nullptr, 0, 0, adjustWidth, adjustHeight, SWP_NOMOVE | SWP_NOZORDER);
     }
 
-    auto Window::GetSystemHandle() -> void*
+    auto Window::GetSystemHandle() const -> void*
     {
         return _hWindow;
     }
@@ -466,55 +463,6 @@ namespace NativeWindow
     auto Window::ClearWindowEventProcessFunction() -> void
     {
         _winEventProcess = nullptr;
-    }
-
-    // https://www.khronos.org/opengl/wiki/Creating_an_OpenGL_Context_(WGL)
-    auto Window::CreateOpenGLContext() -> void
-    {
-        HDC hDeviceHandle = reinterpret_cast<HDC>(_hDeviceHandle);
-
-        ::gladLoaderLoadGL();
-
-        PIXELFORMATDESCRIPTOR pfd =
-        {
-                sizeof(PIXELFORMATDESCRIPTOR),
-                1,
-                PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER,    //Flags
-                PFD_TYPE_RGBA,        // The kind of framebuffer. RGBA or palette.
-                32,                   // Color depth of the framebuffer.
-                0, 0, 0, 0, 0, 0,
-                0,
-                0,
-                0,
-                0, 0, 0, 0,
-                24,                   // Number of bits for the depth buffer
-                8,                    // Number of bits for the stencil buffer
-                0,                    // Number of Aux buffers in the framebuffer.
-                PFD_MAIN_PLANE,
-                0,
-                0, 0, 0
-        };
-
-        int letWindowsChooseThisPixelFormat;
-        letWindowsChooseThisPixelFormat = ::ChoosePixelFormat(hDeviceHandle, &pfd);
-        ::SetPixelFormat(hDeviceHandle, letWindowsChooseThisPixelFormat, &pfd);
-
-        _hGLContext = ::wglCreateContext(hDeviceHandle);
-        ::wglMakeCurrent(hDeviceHandle, reinterpret_cast<HGLRC>(_hGLContext));
-    }
-
-    auto Window::ReleaseOpenGLContext() -> void
-    {
-        if (_hGLContext)
-        {
-            ::wglMakeCurrent(reinterpret_cast<HDC>(_hDeviceHandle), nullptr);
-            ::wglDeleteContext(reinterpret_cast<HGLRC>(_hGLContext));
-        }
-    }
-
-    auto Window::SwapBuffer() -> void
-    {
-        ::SwapBuffers(reinterpret_cast<HDC>(_hDeviceHandle));
     }
 
 }

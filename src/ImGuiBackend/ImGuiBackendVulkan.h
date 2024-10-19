@@ -17,6 +17,9 @@ namespace ImApp
         void SetClearColor(const Utility::Color& color) override;
         void SwapBuffer() override;
 
+    protected:
+        void OnVSyncEnableSettle() override;
+
     private:
         std::array<float, 4> _clearColor = { 0.75f, 0.75f, 0.75f, 1.00f };
     };

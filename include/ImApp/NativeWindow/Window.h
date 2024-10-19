@@ -25,9 +25,8 @@ namespace NativeWindow
     public:
         using WindowHandle = void*;
         using IconHandle = void*;
-        using CurosrHandle = void*;
+        using CursorHandle = void*;
         using DeviceContextHandle = void*;
-        using GLContextHandle = void*;
 
     public:
         Window(int width, int height, const std::string& title, int style = (int)WindowStyle::Default);
@@ -35,9 +34,6 @@ namespace NativeWindow
 
     public:
         auto EventLoop() -> void;
-        auto CreateOpenGLContext() -> void;
-        auto ReleaseOpenGLContext() -> void;
-        auto SwapBuffer() -> void;
         auto WindowEventProcess(uint32_t message, void* wpara, void* lpara) -> void;
         auto SetWindowEventProcessFunction(const std::function<bool(void*, uint32_t, void*, void*)>& f) -> void;
         auto ClearWindowEventProcessFunction() -> void;
@@ -51,7 +47,7 @@ namespace NativeWindow
         auto GetPosition() -> std::pair<int, int>;
         auto SetPosition(int x, int y) -> void;
 
-        auto GetSystemHandle() -> void*;
+        auto GetSystemHandle() const -> void*;
 
         auto SetIcon(unsigned int width, unsigned int height, const std::byte* pixels) -> void;
         auto SetIcon(int iconResId) -> void;
@@ -88,16 +84,13 @@ namespace NativeWindow
 
         // Resource
         IconHandle _hIcon;
-        CurosrHandle _hCursor;
+        CursorHandle _hCursor;
 
         // Event
         std::queue<WindowEvent> _eventQueue;
 
         // Additional handler
         std::function<bool(void*, uint32_t, void*, void*)> _winEventProcess;
-
-        // OpenGL
-        GLContextHandle _hGLContext;
 
     private:
         static void RegisterWindowClass();

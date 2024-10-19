@@ -26,6 +26,9 @@ namespace ImApp
         virtual void SwapBuffer() = 0;
         virtual void SetClearColor(const Utility::Color& color) = 0;
 
+    protected:
+        virtual void OnVSyncEnableSettle() = 0;
+
     public:
         void SetWindow(NativeWindow::Window* pWindow);
         void SetVSyncEnable(bool enable);
