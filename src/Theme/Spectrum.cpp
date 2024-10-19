@@ -203,9 +203,9 @@ namespace ImApp::Spectrum
             colors[ImGuiCol_Button] = ImGui::ColorConvertU32ToFloat4(LightColor::GRAY75); // match default button to Spectrum's 'Action Button'.
             colors[ImGuiCol_ButtonHovered] = ImGui::ColorConvertU32ToFloat4(LightColor::GRAY200);
             colors[ImGuiCol_ButtonActive] = ImGui::ColorConvertU32ToFloat4(LightColor::GRAY300);
-            colors[ImGuiCol_Header] = ImGui::ColorConvertU32ToFloat4(LightColor::BLUE400);
-            colors[ImGuiCol_HeaderHovered] = ImGui::ColorConvertU32ToFloat4(LightColor::BLUE500);
-            colors[ImGuiCol_HeaderActive] = ImGui::ColorConvertU32ToFloat4(LightColor::BLUE600);
+            colors[ImGuiCol_Header] = ImGui::ColorConvertU32ToFloat4(LightColor::GRAY400);
+            colors[ImGuiCol_HeaderHovered] = ImGui::ColorConvertU32ToFloat4(LightColor::GRAY500);
+            colors[ImGuiCol_HeaderActive] = ImGui::ColorConvertU32ToFloat4(LightColor::GRAY600);
             colors[ImGuiCol_Separator] = ImGui::ColorConvertU32ToFloat4(LightColor::GRAY400);
             colors[ImGuiCol_SeparatorHovered] = ImGui::ColorConvertU32ToFloat4(LightColor::GRAY600);
             colors[ImGuiCol_SeparatorActive] = ImGui::ColorConvertU32ToFloat4(LightColor::GRAY700);
@@ -249,9 +249,9 @@ namespace ImApp::Spectrum
             colors[ImGuiCol_Button] = ImGui::ColorConvertU32ToFloat4(DarkColor::GRAY75); // match default button to Spectrum's 'Action Button'.
             colors[ImGuiCol_ButtonHovered] = ImGui::ColorConvertU32ToFloat4(DarkColor::GRAY50);
             colors[ImGuiCol_ButtonActive] = ImGui::ColorConvertU32ToFloat4(DarkColor::GRAY200);
-            colors[ImGuiCol_Header] = ImGui::ColorConvertU32ToFloat4(DarkColor::BLUE400);
-            colors[ImGuiCol_HeaderHovered] = ImGui::ColorConvertU32ToFloat4(DarkColor::BLUE500);
-            colors[ImGuiCol_HeaderActive] = ImGui::ColorConvertU32ToFloat4(DarkColor::BLUE600);
+            colors[ImGuiCol_Header] = ImGui::ColorConvertU32ToFloat4(DarkColor::GRAY400);
+            colors[ImGuiCol_HeaderHovered] = ImGui::ColorConvertU32ToFloat4(DarkColor::GRAY500);
+            colors[ImGuiCol_HeaderActive] = ImGui::ColorConvertU32ToFloat4(DarkColor::GRAY600);
             colors[ImGuiCol_Separator] = ImGui::ColorConvertU32ToFloat4(DarkColor::GRAY400);
             colors[ImGuiCol_SeparatorHovered] = ImGui::ColorConvertU32ToFloat4(DarkColor::GRAY600);
             colors[ImGuiCol_SeparatorActive] = ImGui::ColorConvertU32ToFloat4(DarkColor::GRAY700);
