@@ -14,11 +14,16 @@ namespace ImApp
         {
             case Backend::D3d11:
                 pResult = std::make_unique<ImGuiBackendD3d11>();
+                break;
             case Backend::OpenGL:
                 pResult = std::make_unique<ImGuiBackendOpenGL>();
+                break;
             case Backend::Vulkan:
+                pResult = std::make_unique<ImGuiBackendVulkan>();
+                break;
             default:
                 pResult = std::make_unique<ImGuiBackendD3d11>();
+                break;
         }
 
         pResult->SetWindow(pWindow);

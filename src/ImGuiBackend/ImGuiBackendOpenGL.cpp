@@ -11,9 +11,6 @@ namespace ImApp
     {
         HDC hDeviceHandle = ::GetDC(static_cast<HWND>(_pWindow->GetSystemHandle()));
 
-        ::gladLoaderLoadGL();
-        ::gladLoaderLoadWGL(hDeviceHandle); // for wgl extension function
-
         PIXELFORMATDESCRIPTOR pfd =
         {
             sizeof(PIXELFORMATDESCRIPTOR),
@@ -40,6 +37,10 @@ namespace ImApp
 
         _hGLContext = ::wglCreateContext(hDeviceHandle);
         ::wglMakeCurrent(hDeviceHandle, reinterpret_cast<HGLRC>(_hGLContext));
+
+        // Loading GL function must after gl context make current.
+        ::gladLoaderLoadGL();
+        ::gladLoaderLoadWGL(hDeviceHandle); // for wgl extension function
 
         // refresh vsync
         OnVSyncEnableSettle();
