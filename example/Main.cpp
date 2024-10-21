@@ -1,4 +1,5 @@
 #include <format>
+#include <Windows.h>
 #include "ImApp/ImGuiWinApp.h"
 #include "ImApp/Component/Window.h"
 #include "ImApp/Component/SameLine.h"
@@ -7,13 +8,19 @@ using namespace ImApp;
 
 class DemoWindow: public ImGuiWinApp
 {
+private:
+    ImFont* _pChineseFont = nullptr;
+
 protected:
+    void OnWindowInitialized() override
+    {
+        static constexpr const char* SYSTEM_MSYH_REGULAR_FONT_PATH = "c:\\Windows\\Fonts\\msyhl.ttc";
+        auto defaultFontSize = GetDefaultFontSize();
+        _pChineseFont = CreateImGuiFont(SYSTEM_MSYH_REGULAR_FONT_PATH, defaultFontSize);
+    }
+
     void Tick() override
     {
-        // ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, {6, 12});
-        // ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, {2, 6});
-        // ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 2);
-
         static float f = 0.0f;
         static int counter = 0;
 
@@ -27,7 +34,7 @@ protected:
         window_flags |= ImGuiWindowFlags_NoResize;
         window_flags |= ImGuiWindowFlags_NoCollapse;
 
-        Window("Hello, world!", window_flags, []()
+        Window("Hello, world!", window_flags, [this]()
         {
             ImGuiIO& io = ImGui::GetIO();
             ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
@@ -167,14 +174,16 @@ protected:
                 ImGui::Separator();
                 ImGui::TreePop();
             }
-        });
 
-        // ImGui::PopStyleVar(3);
-        // ImGui::PopFont();
+            ImGui::PushFont(_pChineseFont);
+            ImGui::DebugTextEncoding("测试");
+            ImGui::SeparatorText("中文标题");
+            ImGui::PopFont();
+        });
     }
 };
 
-int main()
+int WINAPI wWinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PWSTR lpCmdLine, int nCmdShow)
 {
     DemoWindow app;
     app.InitWindow(800, 600, "Hello world", NativeWindow::DefaultWindowStyle, ImApp::Backend::OpenGL);

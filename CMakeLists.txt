@@ -30,6 +30,7 @@ option (ENABLE_IMGUI_WIN_APP_DEMO OFF)
 if (ENABLE_IMGUI_WIN_APP_DEMO)
     add_executable          (demo_window ./example/Main.cpp)
     target_link_libraries   (demo_window PUBLIC imgui_win_app_framework)
+    set_target_properties   (demo_window PROPERTIES LINK_FLAGS "/SUBSYSTEM:WINDOWS")
 endif ()
 
 

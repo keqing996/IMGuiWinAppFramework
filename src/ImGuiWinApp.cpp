@@ -46,6 +46,8 @@ namespace ImApp
         InitTheme();
 
         _pWindow->SetWindowEventProcessFunction(ImGui_ImplWin32_WndProcHandler_Wrapper);
+
+        OnWindowInitialized();
     }
 
     void ImGuiWinApp::ImGuiInitConfig()
@@ -159,6 +161,10 @@ namespace ImApp
     void ImGuiWinApp::SetClearColor(const Utility::Color& color)
     {
         _pBackend->SetClearColor(color);
+    }
+
+    void ImGuiWinApp::OnWindowInitialized()
+    {
     }
 
     void ImGuiWinApp::PreTick()

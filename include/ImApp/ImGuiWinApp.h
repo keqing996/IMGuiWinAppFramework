@@ -31,6 +31,7 @@ namespace ImApp
         void SetClearColor(const Utility::Color& color);
 
     protected:
+        virtual void OnWindowInitialized();
         virtual void PreTick();
         virtual void Tick();
         virtual void PostTick();
