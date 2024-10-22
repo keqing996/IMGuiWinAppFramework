@@ -9,7 +9,7 @@ namespace ImApp
     // https://www.khronos.org/opengl/wiki/Creating_an_OpenGL_Context_(WGL)
     void ImGuiBackendOpenGL::SetupDevice()
     {
-        HDC hDeviceHandle = ::GetDC(static_cast<HWND>(_pWindow->GetSystemHandle()));
+        _hDeviceHandle = ::GetDC(static_cast<HWND>(_pWindow->GetSystemHandle()));
 
         PIXELFORMATDESCRIPTOR pfd =
         {
@@ -31,16 +31,15 @@ namespace ImApp
             0, 0, 0
         };
 
-        int letWindowsChooseThisPixelFormat;
-        letWindowsChooseThisPixelFormat = ::ChoosePixelFormat(hDeviceHandle, &pfd);
-        ::SetPixelFormat(hDeviceHandle, letWindowsChooseThisPixelFormat, &pfd);
+        int letWindowsChooseThisPixelFormat = ::ChoosePixelFormat(static_cast<HDC>(_hDeviceHandle), &pfd);
+        ::SetPixelFormat(static_cast<HDC>(_hDeviceHandle), letWindowsChooseThisPixelFormat, &pfd);
 
-        _hGLContext = ::wglCreateContext(hDeviceHandle);
-        ::wglMakeCurrent(hDeviceHandle, reinterpret_cast<HGLRC>(_hGLContext));
+        _hGLContext = ::wglCreateContext(static_cast<HDC>(_hDeviceHandle));
+        ::wglMakeCurrent(static_cast<HDC>(_hDeviceHandle), static_cast<HGLRC>(_hGLContext));
 
         // Loading GL function must after gl context make current.
         ::gladLoaderLoadGL();
-        ::gladLoaderLoadWGL(hDeviceHandle); // for wgl extension function
+        ::gladLoaderLoadWGL(static_cast<HDC>(_hDeviceHandle)); // for wgl extension function
 
         // refresh vsync
         OnVSyncEnableSettle();
@@ -48,11 +47,19 @@ namespace ImApp
 
     void ImGuiBackendOpenGL::ClearDevice()
     {
+        HWND hWnd = static_cast<HWND>(_pWindow->GetSystemHandle());
+
+        if (_hDeviceHandle)
+        {
+            ::wglMakeCurrent(static_cast<HDC>(_hDeviceHandle), nullptr);
+            ::ReleaseDC(hWnd, static_cast<HDC>(_hDeviceHandle));
+            _hDeviceHandle = nullptr;
+        }
+
         if (_hGLContext)
         {
-            HDC hDeviceHandle = ::GetDC(static_cast<HWND>(_pWindow->GetSystemHandle()));
-            ::wglMakeCurrent(hDeviceHandle, nullptr);
             ::wglDeleteContext(static_cast<HGLRC>(_hGLContext));
+            _hGLContext = nullptr;
         }
     }
 
@@ -90,8 +97,8 @@ namespace ImApp
 
     void ImGuiBackendOpenGL::SwapBuffer()
     {
-        HDC hDeviceHandle = ::GetDC(static_cast<HWND>(_pWindow->GetSystemHandle()));
-        ::SwapBuffers(hDeviceHandle);
+        if (_hDeviceHandle)
+            ::SwapBuffers(static_cast<HDC>(_hDeviceHandle));
     }
 
     void ImGuiBackendOpenGL::OnVSyncEnableSettle()

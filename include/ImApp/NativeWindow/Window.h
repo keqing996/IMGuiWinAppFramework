@@ -33,42 +33,42 @@ namespace NativeWindow
         ~Window();
 
     public:
-        auto EventLoop() -> void;
-        auto WindowEventProcess(uint32_t message, void* wpara, void* lpara) -> void;
-        auto SetWindowEventProcessFunction(const std::function<bool(void*, uint32_t, void*, void*)>& f) -> void;
-        auto ClearWindowEventProcessFunction() -> void;
-        auto HasEvent() -> bool;
-        auto PopEvent() -> WindowEvent;
-        auto PopAllEvent() -> std::vector<WindowEvent>;
+        void EventLoop();
+        void WindowEventProcess(uint32_t message, void* wpara, void* lpara);
+        void SetWindowEventProcessFunction(const std::function<bool(void*, uint32_t, void*, void*)>& f);
+        void ClearWindowEventProcessFunction();
+        bool HasEvent() const;
+        WindowEvent PopEvent();
+        std::vector<WindowEvent> PopAllEvent();
 
-        auto GetSize() -> std::pair<int, int>;
-        auto SetSize(int width, int height) -> void;
+        std::pair<int, int> GetSize();
+        void SetSize(int width, int height);
 
-        auto GetPosition() -> std::pair<int, int>;
-        auto SetPosition(int x, int y) -> void;
+        std::pair<int, int> GetPosition();
+        void SetPosition(int x, int y);
 
-        auto GetSystemHandle() const -> void*;
+        void* GetSystemHandle() const;
 
-        auto SetIcon(unsigned int width, unsigned int height, const std::byte* pixels) -> void;
-        auto SetIcon(int iconResId) -> void;
+        void SetIcon(unsigned int width, unsigned int height, const std::byte* pixels);
+        void SetIcon(int iconResId);
 
-        auto SetTitle(const std::string& title) -> void;
+        void SetTitle(const std::string& title);
 
-        auto SetWindowVisible(bool show) -> void;
+        void SetWindowVisible(bool show);
 
-        auto GetCursorVisible() -> bool;
-        auto SetCursorVisible(bool show) -> void;
+        bool GetCursorVisible() const;
+        void SetCursorVisible(bool show);
 
-        auto GetCursorCapture() -> bool;
-        auto SetCursorCapture(bool capture) -> void;
+        bool GetCursorCapture() const;
+        void SetCursorCapture(bool capture);
 
-        auto GetKeyRepeated() -> bool;
-        auto SetKeyRepeated(bool repeated) -> void;
+        bool GetKeyRepeated() const;
+        void SetKeyRepeated(bool repeated);
 
     private:
-        auto WindowEventProcessInternal(uint32_t message, void* wpara, void* lpara) -> void;
-        auto PushEvent(const WindowEvent& event) -> void;
-        auto CaptureCursorInternal(bool doCapture) -> void;
+        void WindowEventProcessInternal(uint32_t message, void* wpara, void* lpara);
+        void PushEvent(const WindowEvent& event);
+        void CaptureCursorInternal(bool doCapture);
 
     private:
         // Window handle

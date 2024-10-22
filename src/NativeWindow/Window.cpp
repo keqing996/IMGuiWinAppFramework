@@ -143,29 +143,29 @@ namespace NativeWindow
 
         // Get create style
         DWORD win32Style = WS_VISIBLE;
-        if (style == (int)WindowStyle::None)
+        if (style == static_cast<int>(WindowStyle::None))
             win32Style |= WS_POPUP;
         else
         {
-            if (style & (int)WindowStyle::HaveTitleBar)
+            if (style & static_cast<int>(WindowStyle::HaveTitleBar))
                 win32Style |= WS_CAPTION | WS_MINIMIZEBOX;
-            if (style & (int)WindowStyle::HaveResize)
+            if (style & static_cast<int>(WindowStyle::HaveResize))
                 win32Style |= WS_THICKFRAME | WS_MAXIMIZEBOX;
-            if (style & (int)WindowStyle::HaveClose)
+            if (style & static_cast<int>(WindowStyle::HaveClose))
                 win32Style |= WS_SYSMENU;
         }
 
         // Calculate create position: left & top
-        HDC screenDC = ::GetDC(nullptr);
-        int left = (::GetDeviceCaps(screenDC, HORZRES) - width) / 2;
-        int top = (::GetDeviceCaps(screenDC, VERTRES) - height) / 2;
+        const HDC screenDC = ::GetDC(nullptr);
+        const int left = (::GetDeviceCaps(screenDC, HORZRES) - width) / 2;
+        const int top = (::GetDeviceCaps(screenDC, VERTRES) - height) / 2;
         ::ReleaseDC(nullptr, screenDC);
 
         // Adjust create size
         auto [adjustWidth, adjustHeight] = Support::CalculateAdjustWindowSize(width, height, win32Style);
 
         // Create window
-        auto titleInWideStr = Utility::StringToWideString(title);
+        const auto titleInWideStr = Utility::StringToWideString(title);
         const wchar_t* titleWide = titleInWideStr.c_str();
         _hWindow = ::CreateWindowW(
                 _sWindowRegisterName,
@@ -184,7 +184,7 @@ namespace NativeWindow
             return;
 
         // Get device context
-        _hDeviceHandle = ::GetDC(reinterpret_cast<HWND>(_hWindow));
+        _hDeviceHandle = ::GetDC(static_cast<HWND>(_hWindow));
 
         // Global counting
         _sGlobalWindowsCount++;
@@ -199,14 +199,14 @@ namespace NativeWindow
         ::ReleaseCapture();
 
         if (_hDeviceHandle)
-            ::ReleaseDC(reinterpret_cast<HWND>(_hWindow), reinterpret_cast<HDC>(_hDeviceHandle));
+            ::ReleaseDC(static_cast<HWND>(_hWindow), static_cast<HDC>(_hDeviceHandle));
 
         // Icon
         if (_hIcon != nullptr)
-            ::DestroyIcon(reinterpret_cast<HICON>(_hIcon));
+            ::DestroyIcon(static_cast<HICON>(_hIcon));
 
         // Destroy window
-        ::DestroyWindow(reinterpret_cast<HWND>(_hWindow));
+        ::DestroyWindow(static_cast<HWND>(_hWindow));
 
         // Global counting
         _sGlobalWindowsCount--;
@@ -217,7 +217,7 @@ namespace NativeWindow
 
     void Window::RegisterWindowClass()
     {
-        WNDCLASSW windowClass;
+        WNDCLASSW windowClass {};
         windowClass.style         = 0;
         windowClass.lpfnWndProc   = &Support::DefaultWndProc;
         windowClass.cbClsExtra    = 0;
@@ -238,21 +238,21 @@ namespace NativeWindow
 
     void Window::SetSize(int width, int height)
     {
-        HWND hWnd = reinterpret_cast<HWND>(_hWindow);
-        DWORD dwStyle = static_cast<DWORD>(::GetWindowLongPtrW(hWnd, GWL_STYLE));
+        const HWND hWnd = static_cast<HWND>(_hWindow);
+        const DWORD dwStyle = static_cast<DWORD>(::GetWindowLongPtrW(hWnd, GWL_STYLE));
         auto [adjustWidth, adjustHeight] = Support::CalculateAdjustWindowSize(width, height, dwStyle);
         ::SetWindowPos(hWnd, nullptr, 0, 0, adjustWidth, adjustHeight, SWP_NOMOVE | SWP_NOZORDER);
     }
 
-    auto Window::GetSystemHandle() const -> void*
+    void* Window::GetSystemHandle() const
     {
         return _hWindow;
     }
 
-    auto Window::SetIcon(unsigned int width, unsigned int height, const std::byte* pixels) -> void
+    void Window::SetIcon(unsigned int width, unsigned int height, const std::byte* pixels)
     {
         if (_hIcon != nullptr)
-            ::DestroyIcon(reinterpret_cast<HICON>(_hIcon));
+            ::DestroyIcon(static_cast<HICON>(_hIcon));
 
         _hIcon = nullptr;
 
@@ -278,23 +278,23 @@ namespace NativeWindow
         if (_hIcon != nullptr)
         {
             ::SendMessageW(
-                    reinterpret_cast<HWND>(_hWindow),
+                    static_cast<HWND>(_hWindow),
                     WM_SETICON,
                     ICON_BIG,
                     reinterpret_cast<LPARAM>(_hIcon));
 
             ::SendMessageW(
-                    reinterpret_cast<HWND>(_hWindow),
+                    static_cast<HWND>(_hWindow),
                     WM_SETICON,
                     ICON_SMALL,
                     reinterpret_cast<LPARAM>(_hIcon));
         }
     }
 
-    auto Window::SetIcon(int iconResId) -> void
+    void Window::SetIcon(int iconResId)
     {
         if (_hIcon != nullptr)
-            ::DestroyIcon(reinterpret_cast<HICON>(_hIcon));
+            ::DestroyIcon(static_cast<HICON>(_hIcon));
 
         _hIcon = nullptr;
 
@@ -302,83 +302,83 @@ namespace NativeWindow
         if (_hIcon != nullptr)
         {
             ::SendMessageW(
-                    reinterpret_cast<HWND>(_hWindow),
+                    static_cast<HWND>(_hWindow),
                     WM_SETICON,
                     ICON_BIG,
                     reinterpret_cast<LPARAM>(_hIcon));
 
             ::SendMessageW(
-                    reinterpret_cast<HWND>(_hWindow),
+                    static_cast<HWND>(_hWindow),
                     WM_SETICON,
                     ICON_SMALL,
                     reinterpret_cast<LPARAM>(_hIcon));
         }
     }
 
-    auto Window::SetWindowVisible(bool show) -> void
+    void Window::SetWindowVisible(bool show)
     {
-        ::ShowWindow(reinterpret_cast<HWND>(_hWindow), show ? SW_SHOW : SW_HIDE);
+        ::ShowWindow(static_cast<HWND>(_hWindow), show ? SW_SHOW : SW_HIDE);
     }
 
-    auto Window::SetCursorVisible(bool show) -> void
+    void Window::SetCursorVisible(bool show)
     {
         _cursorVisible = show;
-        ::SetCursor(_cursorVisible ? reinterpret_cast<HCURSOR>(_hCursor) : nullptr);
+        ::SetCursor(_cursorVisible ? static_cast<HCURSOR>(_hCursor) : nullptr);
     }
 
-    auto Window::SetCursorCapture(bool capture) -> void
+    void Window::SetCursorCapture(bool capture)
     {
         _cursorCapture = capture;
         CaptureCursorInternal(_cursorCapture);
     }
 
-    auto Window::GetCursorVisible() -> bool
+    bool Window::GetCursorVisible() const
     {
         return _cursorVisible;
     }
 
-    auto Window::GetCursorCapture() -> bool
+    bool Window::GetCursorCapture() const
     {
         return _cursorCapture;
     }
 
-    auto Window::GetKeyRepeated() -> bool
+    bool Window::GetKeyRepeated() const
     {
         return _enableKeyRepeat;
     }
 
-    auto Window::SetKeyRepeated(bool repeated) -> void
+    void Window::SetKeyRepeated(bool repeated)
     {
         _enableKeyRepeat = repeated;
     }
 
-    auto Window::SetTitle(const std::string& title) -> void
+    void Window::SetTitle(const std::string& title)
     {
-        auto titleInWideStr = Utility::StringToWideString(title);
+        const auto titleInWideStr = Utility::StringToWideString(title);
         const wchar_t* titleWide = titleInWideStr.c_str();
-        ::SetWindowTextW(reinterpret_cast<HWND>(_hWindow), titleWide);
+        ::SetWindowTextW(static_cast<HWND>(_hWindow), titleWide);
     }
 
-    auto Window::GetSize() -> std::pair<int, int>
+    std::pair<int, int> Window::GetSize()
     {
         RECT rect;
-        ::GetClientRect(reinterpret_cast<HWND>(_hWindow), &rect);
+        ::GetClientRect(static_cast<HWND>(_hWindow), &rect);
         return { static_cast<int>(rect.right - rect.left), static_cast<int>(rect.bottom - rect.top) };
     }
 
-    auto Window::GetPosition() -> std::pair<int, int>
+    std::pair<int, int> Window::GetPosition()
     {
         RECT rect;
-        ::GetWindowRect(reinterpret_cast<HWND>(_hWindow), &rect);
+        ::GetWindowRect(static_cast<HWND>(_hWindow), &rect);
 
         return { static_cast<int>(rect.left), static_cast<int>(rect.top) };
     }
 
-    auto Window::SetPosition(int x, int y) -> void
+    void Window::SetPosition(int x, int y)
     {
         ::SetWindowPos(
-                reinterpret_cast<HWND>(_hWindow),
-                NULL,
+                static_cast<HWND>(_hWindow),
+                nullptr,
                 x,
                 y,
                 0,
@@ -390,7 +390,7 @@ namespace NativeWindow
             SetCursorCapture(true);
     }
 
-    auto Window::EventLoop() -> void
+    void Window::EventLoop()
     {
         // Clear event queue
         while (!_eventQueue.empty())
@@ -405,23 +405,23 @@ namespace NativeWindow
         }
     }
 
-    auto Window::HasEvent() -> bool
+    bool Window::HasEvent() const
     {
         return !_eventQueue.empty();
     }
 
-    auto Window::PopEvent() -> WindowEvent
+    WindowEvent Window::PopEvent()
     {
         if (_eventQueue.empty())
             return WindowEvent(WindowEvent::Type::None);
 
-        WindowEvent result = _eventQueue.front();
+        const WindowEvent result = _eventQueue.front();
         _eventQueue.pop();
 
         return result;
     }
 
-    auto Window::PopAllEvent() -> std::vector<WindowEvent>
+    std::vector<WindowEvent> Window::PopAllEvent()
     {
         std::vector<WindowEvent> result;
         result.reserve(_eventQueue.size());
@@ -435,18 +435,18 @@ namespace NativeWindow
         return result;
     }
 
-    auto Window::PushEvent(const WindowEvent& event) -> void
+    void Window::PushEvent(const WindowEvent& event)
     {
         _eventQueue.push(event);
     }
 
-    auto Window::CaptureCursorInternal(bool doCapture) -> void
+    void Window::CaptureCursorInternal(bool doCapture)
     {
         if (doCapture)
         {
             RECT rect;
-            ::GetClientRect(reinterpret_cast<HWND>(_hWindow), &rect);
-            ::MapWindowPoints(reinterpret_cast<HWND>(_hWindow), nullptr, reinterpret_cast<LPPOINT>(&rect), 2);
+            ::GetClientRect(static_cast<HWND>(_hWindow), &rect);
+            ::MapWindowPoints(static_cast<HWND>(_hWindow), nullptr, reinterpret_cast<LPPOINT>(&rect), 2);
             ::ClipCursor(&rect);
         }
         else
@@ -455,12 +455,12 @@ namespace NativeWindow
         }
     }
 
-    auto Window::SetWindowEventProcessFunction(const std::function<bool(void*, uint32_t, void*, void*)>& f) -> void
+    void Window::SetWindowEventProcessFunction(const std::function<bool(void*, uint32_t, void*, void*)>& f)
     {
         _winEventProcess = f;
     }
 
-    auto Window::ClearWindowEventProcessFunction() -> void
+    void Window::ClearWindowEventProcessFunction()
     {
         _winEventProcess = nullptr;
     }

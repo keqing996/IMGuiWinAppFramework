@@ -24,6 +24,7 @@ namespace ImApp
         std::array<float, 4> _clearColor = { 0.75f, 0.75f, 0.75f, 1.00f };
 
         // OpenGL
-        void* _hGLContext;
+        void* _hDeviceHandle = nullptr;
+        void* _hGLContext = nullptr;
     };
 }
