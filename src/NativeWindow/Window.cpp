@@ -235,6 +235,35 @@ namespace NativeWindow
         _enableKeyRepeat = repeated;
     }
 
+    bool Window::WindowEventPreProcess(uint32_t message, void* wpara, void* lpara)
+    {
+        return false;
+    }
+
+    void Window::OnWindowClose()
+    {
+    }
+
+    void Window::OnWindowResize(int width, int height)
+    {
+    }
+
+    void Window::OnWindowGetFocus()
+    {
+    }
+
+    void Window::OnWindowLostFocus()
+    {
+    }
+
+    void Window::OnMouseEnterWindow()
+    {
+    }
+
+    void Window::OnMouseLeaveWindow()
+    {
+    }
+
     void Window::SetTitle(const std::string& title)
     {
         const auto titleInWideStr = Utility::StringToWideString(title);
@@ -275,10 +304,6 @@ namespace NativeWindow
 
     void Window::EventLoop()
     {
-        // Clear event queue
-        while (!_eventQueue.empty())
-            _eventQueue.pop();
-
         // Fetch new event
         MSG message;
         while (::PeekMessageW(&message, nullptr, 0, 0, PM_REMOVE))
@@ -286,41 +311,6 @@ namespace NativeWindow
             ::TranslateMessage(&message);
             ::DispatchMessageW(&message);
         }
-    }
-
-    bool Window::HasEvent() const
-    {
-        return !_eventQueue.empty();
-    }
-
-    WindowEvent Window::PopEvent()
-    {
-        if (_eventQueue.empty())
-            return WindowEvent(WindowEvent::Type::None);
-
-        const WindowEvent result = _eventQueue.front();
-        _eventQueue.pop();
-
-        return result;
-    }
-
-    std::vector<WindowEvent> Window::PopAllEvent()
-    {
-        std::vector<WindowEvent> result;
-        result.reserve(_eventQueue.size());
-
-        while (!_eventQueue.empty())
-        {
-            result.push_back(_eventQueue.front());
-            _eventQueue.pop();
-        }
-
-        return result;
-    }
-
-    void Window::PushEvent(const WindowEvent& event)
-    {
-        _eventQueue.push(event);
     }
 
     void Window::CaptureCursorInternal(bool doCapture)

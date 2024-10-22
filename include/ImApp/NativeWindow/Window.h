@@ -5,7 +5,6 @@
 #include <queue>
 #include <optional>
 #include <functional>
-#include "WindowEvent.h"
 #include "WindowStyle.h"
 
 namespace NativeWindow
@@ -26,13 +25,9 @@ namespace NativeWindow
         ~Window();
 
     public:
-        //
         void EventLoop();
         void SetWindowEventProcessFunction(const std::function<bool(void*, uint32_t, void*, void*)>& f);
         void ClearWindowEventProcessFunction();
-        bool HasEvent() const;
-        WindowEvent PopEvent();
-        std::vector<WindowEvent> PopAllEvent();
 
         std::pair<int, int> GetSize();
         void SetSize(int width, int height);
@@ -58,10 +53,18 @@ namespace NativeWindow
         bool GetKeyRepeated() const;
         void SetKeyRepeated(bool repeated);
 
+    protected:
+        virtual bool WindowEventPreProcess(uint32_t message, void* wpara, void* lpara);
+        virtual void OnWindowClose();
+        virtual void OnWindowResize(int width, int height);
+        virtual void OnWindowGetFocus();
+        virtual void OnWindowLostFocus();
+        virtual void OnMouseEnterWindow();
+        virtual void OnMouseLeaveWindow();
+
     private:
         void WindowEventProcess(uint32_t message, void* wpara, void* lpara);
         void WindowEventProcessInternal(uint32_t message, void* wpara, void* lpara);
-        void PushEvent(const WindowEvent& event);
         void CaptureCursorInternal(bool doCapture);
 
     private:
@@ -79,9 +82,6 @@ namespace NativeWindow
         // Resource
         IconHandle _hIcon;
         CursorHandle _hCursor;
-
-        // Event
-        std::queue<WindowEvent> _eventQueue;
 
         // Additional handler
         std::function<bool(void*, uint32_t, void*, void*)> _winEventProcess;
