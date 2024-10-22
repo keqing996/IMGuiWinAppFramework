@@ -19,7 +19,7 @@ namespace ImApp
         ~ImGuiWinApp();
 
     public:
-        void InitWindow(int width, int height, const std::string& title, int style = NativeWindow::DefaultWindowStyle, Backend backend = Backend::D3d11);
+        void InitWindow(int width, int height, const std::string& title, int style = (int)NativeWindow::WindowStyle::Default, Backend backend = Backend::D3d11);
         void Loop();
         void CloseWindow();
         NativeWindow::Window* GetNativeWindow();

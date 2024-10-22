@@ -186,7 +186,7 @@ protected:
 int WINAPI wWinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PWSTR lpCmdLine, int nCmdShow)
 {
     DemoWindow app;
-    app.InitWindow(800, 600, "Hello world", NativeWindow::DefaultWindowStyle, ImApp::Backend::OpenGL);
+    app.InitWindow(800, 600, "Hello world", (int)NativeWindow::WindowStyle::Default, ImApp::Backend::OpenGL);
     app.SetVSyncEnable(true);
     app.Loop();
 

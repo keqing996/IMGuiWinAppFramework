@@ -1,27 +1,20 @@
 #pragma once
 
-#include "WindowEvent.h"
 #include <cstdint>
 #include <string>
 #include <queue>
 #include <optional>
 #include <functional>
+#include "WindowEvent.h"
+#include "WindowStyle.h"
 
 namespace NativeWindow
 {
-    enum class WindowStyle: int
-    {
-        None = 0,
-        HaveTitleBar = 1 << 0,
-        HaveResize = 1 << 1,
-        HaveClose = 1 << 2,
-        Default = HaveTitleBar | HaveResize | HaveClose
-    };
-
-    const int DefaultWindowStyle = static_cast<int>(WindowStyle::Default);
+    class NativeWindowUtility;
 
     class Window
     {
+        friend NativeWindowUtility;
     public:
         using WindowHandle = void*;
         using IconHandle = void*;
@@ -29,12 +22,12 @@ namespace NativeWindow
         using DeviceContextHandle = void*;
 
     public:
-        Window(int width, int height, const std::string& title, int style = (int)WindowStyle::Default);
+        Window(int width, int height, const std::string& title, int style = static_cast<int>(WindowStyle::Default));
         ~Window();
 
     public:
+        //
         void EventLoop();
-        void WindowEventProcess(uint32_t message, void* wpara, void* lpara);
         void SetWindowEventProcessFunction(const std::function<bool(void*, uint32_t, void*, void*)>& f);
         void ClearWindowEventProcessFunction();
         bool HasEvent() const;
@@ -66,6 +59,7 @@ namespace NativeWindow
         void SetKeyRepeated(bool repeated);
 
     private:
+        void WindowEventProcess(uint32_t message, void* wpara, void* lpara);
         void WindowEventProcessInternal(uint32_t message, void* wpara, void* lpara);
         void PushEvent(const WindowEvent& event);
         void CaptureCursorInternal(bool doCapture);
@@ -99,7 +93,5 @@ namespace NativeWindow
     private:
         inline static int _sGlobalWindowsCount = 0;
         inline static const wchar_t* _sWindowRegisterName = L"InfraWindow";
-
-
     };
 }

@@ -4,6 +4,8 @@
 #include <glad/gl.h>
 #include <glad/wgl.h>
 
+#pragma comment(lib, "opengl32.lib")
+
 namespace ImApp
 {
     // https://www.khronos.org/opengl/wiki/Creating_an_OpenGL_Context_(WGL)
