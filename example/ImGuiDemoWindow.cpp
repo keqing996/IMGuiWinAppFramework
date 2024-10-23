@@ -8,6 +8,9 @@ using namespace ImApp;
 
 class DemoWindow: public ImGuiWinApp
 {
+public:
+    DemoWindow()
+
 private:
     ImFont* _pChineseFont = nullptr;
 
@@ -185,8 +188,7 @@ protected:
 
 int WINAPI wWinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PWSTR lpCmdLine, int nCmdShow)
 {
-    DemoWindow app;
-    app.InitWindow(800, 600, "Hello world", (int)NativeWindow::WindowStyle::Default, ImApp::Backend::OpenGL);
+    DemoWindow app(800, 600, "Hello world", (int)NativeWindow::WindowStyle::Default, ImApp::Backend::OpenGL);
     app.SetVSyncEnable(true);
     app.Loop();
 

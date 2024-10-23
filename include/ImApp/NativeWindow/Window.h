@@ -21,11 +21,12 @@ namespace NativeWindow
         using DeviceContextHandle = void*;
 
     public:
-        Window(int width, int height, const std::string& title, int style = static_cast<int>(WindowStyle::Default));
+        Window(int width, int height, const std::string& title);
+        Window(int width, int height, const std::string& title, int style);
         virtual ~Window();
 
     public:
-        void EventLoop();
+        bool EventLoop();
         void SetWindowEventProcessFunction(const std::function<bool(void*, uint32_t, void*, void*)>& f);
         void ClearWindowEventProcessFunction();
 
@@ -71,6 +72,7 @@ namespace NativeWindow
         // Window handle
         WindowHandle _hWindow;
         DeviceContextHandle _hDeviceHandle;
+        bool _destroyMessageReceived = false;
 
         // State
         std::pair<int, int> _windowSize;
@@ -89,9 +91,5 @@ namespace NativeWindow
     private:
         static void RegisterWindowClass();
         static void UnRegisterWindowClass();
-
-    private:
-        inline static int _sGlobalWindowsCount = 0;
-        inline static const wchar_t* _sWindowRegisterName = L"InfraWindow";
     };
 }

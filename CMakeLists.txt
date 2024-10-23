@@ -26,11 +26,18 @@ target_include_directories  (imgui_win_app_framework PUBLIC ./thirdparty/glad/)
 target_link_libraries       (imgui_win_app_framework PUBLIC Vulkan::Vulkan)
 
 option (ENABLE_IMGUI_WIN_APP_DEMO OFF)
+option (ENABLE_IMGUI_WIN_APP_TEST OFF)
 
 if (ENABLE_IMGUI_WIN_APP_DEMO)
-    add_executable          (demo_window ./example/Main.cpp)
+    add_executable          (demo_window example/ImGuiDemoWindow.cpp)
     target_link_libraries   (demo_window PUBLIC imgui_win_app_framework)
     set_target_properties   (demo_window PROPERTIES LINK_FLAGS "/SUBSYSTEM:WINDOWS")
+endif ()
+
+if (ENABLE_IMGUI_WIN_APP_TEST)
+    add_executable          (test_native_window test/NativeWindowTest.cpp)
+    target_link_libraries   (test_native_window PUBLIC imgui_win_app_framework)
+    set_target_properties   (test_native_window PROPERTIES LINK_FLAGS "/SUBSYSTEM:WINDOWS")
 endif ()
 
 
