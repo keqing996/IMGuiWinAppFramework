@@ -4,7 +4,6 @@
 #include <memory>
 #include <functional>
 #include "ImGuiBackend/ImGuiBackend.h"
-#include "Utility/NonCopyable.h"
 #include "NativeWindow/Window.h"
 
 class ImFont;
@@ -12,25 +11,30 @@ class ImFontAtlas;
 
 namespace ImApp
 {
-    class ImGuiWinApp : Utility::NonCopyable
+    class ImGuiWinApp : NativeWindow::Window
     {
     public:
-        ImGuiWinApp() = default;
-        ~ImGuiWinApp();
+        ImGuiWinApp(int width, int height, const std::string& title, int style = static_cast<int>(NativeWindow::WindowStyle::Default), Backend backend = Backend::D3d11);
+        ~ImGuiWinApp() override;
 
     public:
-        void InitWindow(int width, int height, const std::string& title, int style = (int)NativeWindow::WindowStyle::Default, Backend backend = Backend::D3d11);
         void Loop();
         void CloseWindow();
-        NativeWindow::Window* GetNativeWindow();
 
         // Option
-        void SetOnEventHandler(const std::function<bool(const NativeWindow::WindowEvent&, bool*)>& handler);
         void SetVSyncEnable(bool enable);
         bool GetVSyncEnable() const;
         void SetClearColor(const Utility::Color& color);
 
     protected:
+        bool WindowEventPreProcess(uint32_t message, void* wpara, void* lpara) override;
+        void OnWindowClose() override;
+        void OnWindowResize(int width, int height) override;
+        void OnWindowGetFocus() override;
+        void OnWindowLostFocus() override;
+        void OnMouseEnterWindow() override;
+        void OnMouseLeaveWindow() override;
+
         virtual void OnWindowInitialized();
         virtual void PreTick();
         virtual void Tick();
@@ -52,11 +56,7 @@ namespace ImApp
         void InitTheme();
 
     private:
-        // Window
-        std::unique_ptr<NativeWindow::Window> _pWindow = nullptr;
-        std::function<bool(const NativeWindow::WindowEvent&, bool*)> _onEventHandler = nullptr;
-
-        // Backend
+        bool _breakLoop = false;
         std::unique_ptr<ImGuiBackend> _pBackend = nullptr;
     };
 }

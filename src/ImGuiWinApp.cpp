@@ -6,35 +6,14 @@
 #include <locale>
 #include "ImApp/Font/SansProRegular.h"
 
-
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-
-static bool ImGui_ImplWin32_WndProcHandler_Wrapper(void* hWnd, uint32_t msg, void* lParam, void* wParam)
-{
-    return ImGui_ImplWin32_WndProcHandler((HWND)hWnd, msg, (LPARAM)lParam, (WPARAM)wParam);
-}
-
-static void DefaultOnEventHandler(const NativeWindow::WindowEvent& event, bool* breakAppLoop)
-{
-    *breakAppLoop = event.type == NativeWindow::WindowEvent::Type::Close;
-}
 
 namespace ImApp
 {
-    ImGuiWinApp::~ImGuiWinApp()
+    ImGuiWinApp::ImGuiWinApp(int width, int height, const std::string& title, int style, Backend backend)
+        : Window(width, height, title, style)
     {
-        _pBackend->ClearImGui();
-        ImGui_ImplWin32_Shutdown();
-        ImGui::DestroyContext();
-
-        _pBackend->ClearDevice();
-    }
-
-    void ImGuiWinApp::InitWindow(int width, int height, const std::string& title, int style, Backend backend)
-    {
-        _pWindow = std::make_unique<NativeWindow::Window>(width, height, title, style);
-
-        _pBackend = ImGuiBackend::Create(_pWindow.get(), backend);
+        _pBackend = ImGuiBackend::Create(this, backend);
         _pBackend->SetupDevice();
 
         InitLocale();
@@ -44,10 +23,15 @@ namespace ImApp
         ImGuiInitBackend();
 
         InitTheme();
+    }
 
-        _pWindow->SetWindowEventProcessFunction(ImGui_ImplWin32_WndProcHandler_Wrapper);
+    ImGuiWinApp::~ImGuiWinApp()
+    {
+        _pBackend->ClearImGui();
+        ImGui_ImplWin32_Shutdown();
+        ImGui::DestroyContext();
 
-        OnWindowInitialized();
+        _pBackend->ClearDevice();
     }
 
     void ImGuiWinApp::ImGuiInitConfig()
@@ -70,7 +54,7 @@ namespace ImApp
 
     void ImGuiWinApp::ImGuiInitFrontend()
     {
-        ImGui_ImplWin32_Init((HWND)_pWindow->GetSystemHandle());
+        ImGui_ImplWin32_Init(GetSystemHandle());
     }
 
     void ImGuiWinApp::ImGuiInitBackend()
@@ -108,24 +92,13 @@ namespace ImApp
         while (true)
         {
             // Win32 message loop
-            _pWindow->EventLoop();
+            EventLoop();
 
-            bool breakAppLoop = false;
-            while (_pWindow->HasEvent())
+            if (_breakLoop)
             {
-                auto allEvent = _pWindow->PopAllEvent();
-
-                for (auto& event: allEvent)
-                {
-                    if (_onEventHandler && _onEventHandler(event, &breakAppLoop))
-                        continue;
-
-                    DefaultOnEventHandler(event, &breakAppLoop);
-                }
-            }
-
-            if (breakAppLoop)
+                _breakLoop = false;
                 break;
+            }
 
             // ImGui new frame setup
             _pBackend->NewFrame();
@@ -163,6 +136,42 @@ namespace ImApp
         _pBackend->SetClearColor(color);
     }
 
+    bool ImGuiWinApp::WindowEventPreProcess(uint32_t message, void* wpara, void* lpara)
+    {
+        return ImGui_ImplWin32_WndProcHandler(static_cast<HWND>(GetSystemHandle()), message,
+            reinterpret_cast<LPARAM>(wpara), reinterpret_cast<WPARAM>(lpara));
+    }
+
+    void ImGuiWinApp::OnWindowClose()
+    {
+        Window::OnWindowClose();
+    }
+
+    void ImGuiWinApp::OnWindowResize(int width, int height)
+    {
+        Window::OnWindowResize(width, height);
+    }
+
+    void ImGuiWinApp::OnWindowGetFocus()
+    {
+        Window::OnWindowGetFocus();
+    }
+
+    void ImGuiWinApp::OnWindowLostFocus()
+    {
+        Window::OnWindowLostFocus();
+    }
+
+    void ImGuiWinApp::OnMouseEnterWindow()
+    {
+        Window::OnMouseEnterWindow();
+    }
+
+    void ImGuiWinApp::OnMouseLeaveWindow()
+    {
+        Window::OnMouseLeaveWindow();
+    }
+
     void ImGuiWinApp::OnWindowInitialized()
     {
     }
@@ -181,9 +190,7 @@ namespace ImApp
 
     float ImGuiWinApp::GetDpiScale()
     {
-        HWND hWnd = (HWND)_pWindow->GetSystemHandle();
-        float dpiScale = ImGui_ImplWin32_GetDpiScaleForHwnd(reinterpret_cast<HWND>(hWnd));
-        return dpiScale;
+        return ImGui_ImplWin32_GetDpiScaleForHwnd(GetSystemHandle());
     }
 
     int ImGuiWinApp::GetDefaultFontSize()
@@ -193,7 +200,7 @@ namespace ImApp
 
     ImFont* ImGuiWinApp::CreateImGuiFont(void* fontData, int fontDataSize, int fontSize, bool transferDataOwnership)
     {
-        HWND hWnd = static_cast<HWND>(_pWindow->GetSystemHandle());
+        HWND hWnd = static_cast<HWND>(GetSystemHandle());
         float dpiScale = ImGui_ImplWin32_GetDpiScaleForHwnd(hWnd);
 
         ImFontConfig tempConfig;
@@ -211,7 +218,7 @@ namespace ImApp
 
     ImFont* ImGuiWinApp::CreateImGuiFont(const std::string& ttfPath, int fontSize)
     {
-        HWND hWnd = static_cast<HWND>(_pWindow->GetSystemHandle());
+        HWND hWnd = static_cast<HWND>(GetSystemHandle());
         float dpiScale = ImGui_ImplWin32_GetDpiScaleForHwnd(reinterpret_cast<HWND>(hWnd));
 
         auto pFonts = ImGui::GetIO().Fonts;
@@ -224,18 +231,8 @@ namespace ImApp
 
     void ImGuiWinApp::CloseWindow()
     {
-        HWND hWnd = static_cast<HWND>(_pWindow->GetSystemHandle());
+        HWND hWnd = static_cast<HWND>(GetSystemHandle());
         ::PostMessageW(hWnd, WM_CLOSE, 0, 0);
-    }
-
-    void ImGuiWinApp::SetOnEventHandler(const std::function<bool(const NativeWindow::WindowEvent&, bool*)>& handler)
-    {
-        _onEventHandler = handler;
-    }
-
-    NativeWindow::Window* ImGuiWinApp::GetNativeWindow()
-    {
-        return _pWindow.get();
     }
 
 }

@@ -2,16 +2,16 @@
 
 #include <cstdint>
 #include <string>
-#include <queue>
 #include <optional>
 #include <functional>
 #include "WindowStyle.h"
+#include "ImApp/Utility/NonCopyable.h"
 
 namespace NativeWindow
 {
     class NativeWindowUtility;
 
-    class Window
+    class Window: Utility::NonCopyable
     {
         friend NativeWindowUtility;
     public:
@@ -22,7 +22,7 @@ namespace NativeWindow
 
     public:
         Window(int width, int height, const std::string& title, int style = static_cast<int>(WindowStyle::Default));
-        ~Window();
+        virtual ~Window();
 
     public:
         void EventLoop();
