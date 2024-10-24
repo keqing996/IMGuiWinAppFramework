@@ -251,8 +251,9 @@ namespace NativeWindow
         _enableKeyRepeat = repeated;
     }
 
-    bool Window::WindowEventPreProcess(uint32_t message, void* wpara, void* lpara)
+    bool Window::WindowEventPreProcess(uint32_t message, void* wpara, void* lpara, int& result)
     {
+        result = 0;
         return false;
     }
 
@@ -367,9 +368,14 @@ namespace NativeWindow
     {
         if (doCapture)
         {
+            if (_pWindowState == nullptr)
+                return;
+
+            HWND hWindow = static_cast<HWND>(_pWindowState->hWindow);
+
             RECT rect;
-            ::GetClientRect(static_cast<HWND>(_hWindow), &rect);
-            ::MapWindowPoints(static_cast<HWND>(_hWindow), nullptr, reinterpret_cast<LPPOINT>(&rect), 2);
+            ::GetClientRect(hWindow, &rect);
+            ::MapWindowPoints(hWindow, nullptr, reinterpret_cast<LPPOINT>(&rect), 2);
             ::ClipCursor(&rect);
         }
         else
@@ -378,21 +384,15 @@ namespace NativeWindow
         }
     }
 
-    void Window::SetWindowEventProcessFunction(const std::function<bool(void*, uint32_t, void*, void*)>& f)
-    {
-        _winEventProcess = f;
-    }
-
-    void Window::ClearWindowEventProcessFunction()
-    {
-        _winEventProcess = nullptr;
-    }
-
     int Window::WindowEventProcess(uint32_t message, void* wpara, void* lpara)
     {
-        bool handled = WindowEventPreProcess(message, wpara, lpara);
-        if (handled)
-            return;
+        if (_pWindowState == nullptr)
+            return 0;
+
+        int ret;
+        bool blockProcess = WindowEventPreProcess(message, wpara, lpara, ret);
+        if (blockProcess)
+            return ret;
 
         // WM_CLOSE in DefWindowProcW will cause WM_DESTROY sent.
         if (message == WM_CLOSE)
@@ -410,7 +410,10 @@ namespace NativeWindow
         if (message == WM_DESTROY)
             OnWindowPreDestroy();
 
-        auto ret = ::DefWindowProcW(handle, message, wParam, lParam);
+        ret = ::DefWindowProcW(static_cast<HWND>(_pWindowState->hWindow)
+            , message
+            , reinterpret_cast<WPARAM>(wpara)
+            , reinterpret_cast<LPARAM>(lpara));
 
         if (message == WM_DESTROY)
             OnWindowPostDestroy();

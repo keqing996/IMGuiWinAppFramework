@@ -3,7 +3,6 @@
 #include <cstdint>
 #include <string>
 #include <optional>
-#include <functional>
 #include <memory>
 
 #include "WindowStyle.h"
@@ -26,8 +25,6 @@ namespace NativeWindow
         void Clear();
 
         bool EventLoop();
-        void SetWindowEventProcessFunction(const std::function<bool(void*, uint32_t, void*, void*)>& f);
-        void ClearWindowEventProcessFunction();
 
         std::pair<int, int> GetSize();
         void SetSize(int width, int height);
@@ -55,7 +52,14 @@ namespace NativeWindow
 
     protected:
         virtual void OnWindowInitialized();
-        virtual bool WindowEventPreProcess(uint32_t message, void* wpara, void* lpara);
+
+        /// Called when received a windows message.
+        /// @param message Windows message.
+        /// @param wpara WPARAM.
+        /// @param lpara LPARAM.
+        /// @param result If block original message process, return value of message.
+        /// @return Should block original message process.
+        virtual bool WindowEventPreProcess(uint32_t message, void* wpara, void* lpara, int& result);
         virtual void OnWindowClose();
         virtual void OnWindowPreDestroy();
         virtual void OnWindowPostDestroy();
