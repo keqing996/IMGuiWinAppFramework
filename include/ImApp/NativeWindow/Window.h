@@ -5,6 +5,7 @@
 #include <optional>
 #include <functional>
 #include "WindowStyle.h"
+#include "WindowState.h"
 #include "ImApp/Utility/NonCopyable.h"
 
 namespace NativeWindow
@@ -14,12 +15,6 @@ namespace NativeWindow
     class Window: Utility::NonCopyable
     {
         friend NativeWindowUtility;
-    public:
-        using WindowHandle = void*;
-        using IconHandle = void*;
-        using CursorHandle = void*;
-        using DeviceContextHandle = void*;
-
     public:
         Window(int width, int height, const std::string& title);
         Window(int width, int height, const std::string& title, int style);
@@ -70,9 +65,7 @@ namespace NativeWindow
 
     private:
         // Window handle
-        WindowHandle _hWindow;
-        DeviceContextHandle _hDeviceHandle;
-        bool _destroyMessageReceived = false;
+        void* _hWindow;
 
         // State
         std::pair<int, int> _windowSize;
@@ -82,8 +75,8 @@ namespace NativeWindow
         bool _mouseInsideWindow;
 
         // Resource
-        IconHandle _hIcon;
-        CursorHandle _hCursor;
+        void* _hIcon;
+        void* _hCursor;
 
         // Additional handler
         std::function<bool(void*, uint32_t, void*, void*)> _winEventProcess;

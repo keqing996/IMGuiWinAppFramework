@@ -16,9 +16,7 @@ namespace NativeWindow
 
     Window::Window(int width, int height, const std::string& title, int style)
         : _hWindow(nullptr)
-        , _hDeviceHandle(nullptr)
         , _windowSize({width, height})
-        , _enableKeyRepeat(true)
         , _cursorVisible(true)
         , _cursorCapture(false)
         , _mouseInsideWindow(false)
