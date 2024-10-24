@@ -2,6 +2,9 @@
 #include "ImApp/Utility/WindowsInclude.h"
 #include "ImApp/Utility/String.h"
 #include "ImApp/NativeWindow/Window.h"
+
+#include <vector>
+
 #include "NativeWindowUtility.h"
 
 // Serval paths of window destroyed.
@@ -22,18 +25,18 @@ namespace NativeWindow
 
     Window::~Window()
     {
-        Clear();
+        Destroy();
     }
 
-    bool Window::Initialize(int width, int height, const std::string& title)
+    bool Window::Create(int width, int height, const std::string& title)
     {
         WindowStyle style{};
         style.type = WindowStyle::Type::Overlapped;
         style.config.overlapped = WindowStyle::OverlappedStyle();
-        return Initialize(width, height, title, style);
+        return Create(width, height, title, style);
     }
 
-    bool Window::Initialize(int width, int height, const std::string& title, WindowStyle style)
+    bool Window::Create(int width, int height, const std::string& title, WindowStyle style)
     {
         // Register window
         if (gGlobalWindowsCount == 0)
@@ -98,14 +101,18 @@ namespace NativeWindow
         return true;
     }
 
-    void Window::Clear()
+    void Window::Destroy()
     {
-
+        if (_pWindowState == nullptr)
+            return;
 
         // Destroy window
         ::DestroyWindow(static_cast<HWND>(_pWindowState->hWindow));
+    }
 
-
+    bool Window::IsWindowValid() const
+    {
+        return _pWindowState != nullptr;
     }
 
     void Window::RegisterWindowClass()
@@ -150,10 +157,13 @@ namespace NativeWindow
 
     void Window::SetIcon(unsigned int width, unsigned int height, const std::byte* pixels)
     {
-        if (_hIcon != nullptr)
-            ::DestroyIcon(static_cast<HICON>(_hIcon));
+        if (_pWindowState == nullptr)
+            return;
 
-        _hIcon = nullptr;
+        if (_pWindowState->hIcon != nullptr)
+            ::DestroyIcon(static_cast<HICON>(_pWindowState->hIcon));
+
+        _pWindowState->hIcon = nullptr;
 
         // Change RGBA to BGRA
         std::vector<std::byte> iconPixels(width * height * 4);
@@ -165,95 +175,103 @@ namespace NativeWindow
             iconPixels[i * 4 + 3] = pixels[i * 4 + 3];
         }
 
-        _hIcon = ::CreateIcon(
+        _pWindowState->hIcon = ::CreateIcon(
                 GetModuleHandleW(nullptr),
                 static_cast<int>(width),
                 static_cast<int>(height),
                 1,
                 32,
                 nullptr,
-                (unsigned char*)iconPixels.data());
+                reinterpret_cast<unsigned char*>(iconPixels.data()));
 
-        if (_hIcon != nullptr)
+        if (_pWindowState->hIcon != nullptr)
         {
             ::SendMessageW(
-                    static_cast<HWND>(_hWindow),
+                    static_cast<HWND>(_pWindowState->hWindow),
                     WM_SETICON,
                     ICON_BIG,
-                    reinterpret_cast<LPARAM>(_hIcon));
+                    reinterpret_cast<LPARAM>(_pWindowState->hIcon));
 
             ::SendMessageW(
-                    static_cast<HWND>(_hWindow),
+                    static_cast<HWND>(_pWindowState->hWindow),
                     WM_SETICON,
                     ICON_SMALL,
-                    reinterpret_cast<LPARAM>(_hIcon));
+                    reinterpret_cast<LPARAM>(_pWindowState->hIcon));
         }
     }
 
     void Window::SetIcon(int iconResId)
     {
-        if (_hIcon != nullptr)
-            ::DestroyIcon(static_cast<HICON>(_hIcon));
+        if (_pWindowState == nullptr)
+            return;
 
-        _hIcon = nullptr;
+        if (_pWindowState->hIcon != nullptr)
+            ::DestroyIcon(static_cast<HICON>(_pWindowState->hIcon));
 
-        _hIcon = ::LoadIconW(GetModuleHandleW(nullptr), MAKEINTRESOURCE(iconResId));
-        if (_hIcon != nullptr)
+        _pWindowState->hIcon = nullptr;
+
+        _pWindowState->hIcon = ::LoadIconW(GetModuleHandleW(nullptr), MAKEINTRESOURCE(iconResId));
+        if (_pWindowState->hIcon != nullptr)
         {
             ::SendMessageW(
-                    static_cast<HWND>(_hWindow),
+                    static_cast<HWND>(_pWindowState->hWindow),
                     WM_SETICON,
                     ICON_BIG,
-                    reinterpret_cast<LPARAM>(_hIcon));
+                    reinterpret_cast<LPARAM>(_pWindowState->hIcon));
 
             ::SendMessageW(
-                    static_cast<HWND>(_hWindow),
+                    static_cast<HWND>(_pWindowState->hWindow),
                     WM_SETICON,
                     ICON_SMALL,
-                    reinterpret_cast<LPARAM>(_hIcon));
+                    reinterpret_cast<LPARAM>(_pWindowState->hIcon));
         }
     }
 
     void Window::SetWindowVisible(bool show)
     {
-        ::ShowWindow(static_cast<HWND>(_hWindow), show ? SW_SHOW : SW_HIDE);
+        if (_pWindowState == nullptr)
+            return;
+
+        ::ShowWindow(static_cast<HWND>(_pWindowState->hWindow), show ? SW_SHOW : SW_HIDE);
     }
 
     void Window::SetCursorVisible(bool show)
     {
-        _cursorVisible = show;
-        ::SetCursor(_cursorVisible ? static_cast<HCURSOR>(_hCursor) : nullptr);
+        if (_pWindowState == nullptr)
+            return;
+
+        _pWindowState->cursorVisible = show;
+        ::SetCursor(show ? static_cast<HCURSOR>(_pWindowState->hCursor) : nullptr);
     }
 
     void Window::SetCursorCapture(bool capture)
     {
-        _cursorCapture = capture;
-        CaptureCursorInternal(_cursorCapture);
+        if (_pWindowState == nullptr)
+            return;
+
+        _pWindowState->cursorCapture = capture;
+        CaptureCursorInternal(_pWindowState->cursorCapture);
     }
 
     bool Window::GetCursorVisible() const
     {
-        return _cursorVisible;
+        if (_pWindowState == nullptr)
+            return _pWindowState->cursorVisible;
+
+        return false;
     }
 
     bool Window::GetCursorCapture() const
     {
-        return _cursorCapture;
+        if (_pWindowState == nullptr)
+            return _pWindowState->cursorCapture;
+
+        return false;
     }
 
-    bool Window::GetKeyRepeated() const
+    bool Window::WindowEventPreProcess(uint32_t message, void* wpara, void* lpara, int* result)
     {
-        return _enableKeyRepeat;
-    }
-
-    void Window::SetKeyRepeated(bool repeated)
-    {
-        _enableKeyRepeat = repeated;
-    }
-
-    bool Window::WindowEventPreProcess(uint32_t message, void* wpara, void* lpara, int& result)
-    {
-        result = 0;
+        *result = 0;
         return false;
     }
 
@@ -309,30 +327,42 @@ namespace NativeWindow
 
     void Window::SetTitle(const std::string& title)
     {
+        if (_pWindowState == nullptr)
+            return;
+
         const auto titleInWideStr = Utility::StringToWideString(title);
         const wchar_t* titleWide = titleInWideStr.c_str();
-        ::SetWindowTextW(static_cast<HWND>(_hWindow), titleWide);
+        ::SetWindowTextW(static_cast<HWND>(_pWindowState->hWindow), titleWide);
     }
 
     std::pair<int, int> Window::GetSize()
     {
+        if (_pWindowState == nullptr)
+            return { 0, 0 };
+
         RECT rect;
-        ::GetClientRect(static_cast<HWND>(_hWindow), &rect);
+        ::GetClientRect(static_cast<HWND>(_pWindowState->hWindow), &rect);
         return { static_cast<int>(rect.right - rect.left), static_cast<int>(rect.bottom - rect.top) };
     }
 
     std::pair<int, int> Window::GetPosition()
     {
+        if (_pWindowState == nullptr)
+            return { 0, 0 };
+
         RECT rect;
-        ::GetWindowRect(static_cast<HWND>(_hWindow), &rect);
+        ::GetWindowRect(static_cast<HWND>(_pWindowState->hWindow), &rect);
 
         return { static_cast<int>(rect.left), static_cast<int>(rect.top) };
     }
 
     void Window::SetPosition(int x, int y)
     {
+        if (_pWindowState == nullptr)
+            return;
+
         ::SetWindowPos(
-                static_cast<HWND>(_hWindow),
+                static_cast<HWND>(_pWindowState->hWindow),
                 nullptr,
                 x,
                 y,
@@ -341,11 +371,11 @@ namespace NativeWindow
                 SWP_NOSIZE | SWP_NOZORDER);
 
         // Adjust cursor position
-        if(_cursorCapture)
+        if(_pWindowState->cursorCapture)
             SetCursorCapture(true);
     }
 
-    bool Window::EventLoop()
+    void Window::EventLoop(bool* windowDestroyed)
     {
         // Fetch new event
         MSG message;
@@ -355,13 +385,7 @@ namespace NativeWindow
             ::DispatchMessageW(&message);
         }
 
-        if (_destroyMessageReceived)
-        {
-            _destroyMessageReceived = false;
-            return false;
-        }
-
-        return true;
+        *windowDestroyed = !IsWindowValid();
     }
 
     void Window::CaptureCursorInternal(bool doCapture)
@@ -390,7 +414,7 @@ namespace NativeWindow
             return 0;
 
         int ret;
-        bool blockProcess = WindowEventPreProcess(message, wpara, lpara, ret);
+        bool blockProcess = WindowEventPreProcess(message, wpara, lpara, &ret);
         if (blockProcess)
             return ret;
 
@@ -423,7 +447,7 @@ namespace NativeWindow
 
     void Window::WindowEventProcessInternal(uint32_t message, void* wpara, void* lpara)
     {
-        if (_hWindow == nullptr)
+        if (_pWindowState == nullptr)
             return;
 
         WPARAM wParam = reinterpret_cast<WPARAM>(wpara);
@@ -435,23 +459,24 @@ namespace NativeWindow
             {
                 // lower world of lParam is hit test result
                 if (LOWORD(lParam) == HTCLIENT)
-                    ::SetCursor(_cursorVisible ? static_cast<HCURSOR>(_hCursor) : nullptr);
+                    ::SetCursor(_pWindowState->cursorVisible ? static_cast<HCURSOR>(_pWindowState->hCursor) : nullptr);
 
                 break;
             }
             case WM_SIZE:
             {
                 auto newSize = GetSize();
-                if (wParam != SIZE_MINIMIZED && _windowSize != newSize)
+                if (wParam != SIZE_MINIMIZED && (_pWindowState->width != newSize.first || _pWindowState->height != newSize.second))
                 {
-                    _windowSize = newSize;
-                    OnWindowResize(_windowSize.first, _windowSize.second);
+                    _pWindowState->width = newSize.first;
+                    _pWindowState->height = newSize.second;
+                    OnWindowResize(_pWindowState->width, _pWindowState->height);
                 }
                 break;
             }
             case WM_SETFOCUS:
             {
-                CaptureCursorInternal(_cursorCapture);
+                CaptureCursorInternal(_pWindowState->cursorCapture);
                 OnWindowGetFocus();
                 break;
             }
@@ -464,7 +489,7 @@ namespace NativeWindow
 
             case WM_MOUSEMOVE:
             {
-                const HWND hWnd = static_cast<HWND>(_hWindow);
+                const HWND hWnd = static_cast<HWND>(_pWindowState->hWindow);
                 const int x = static_cast<int16_t>(LOWORD(lParam));
                 const int y = static_cast<int16_t>(HIWORD(lParam));
 
@@ -485,17 +510,17 @@ namespace NativeWindow
                 // Mouse is out of window
                 if ((x < area.left) || (x > area.right) || (y < area.top) || (y > area.bottom))
                 {
-                    if (_mouseInsideWindow)
+                    if (_pWindowState->mouseInsideWindow)
                     {
-                        _mouseInsideWindow = false;
+                        _pWindowState->mouseInsideWindow = false;
                         OnMouseEnterWindow();
                     }
                 }
                 else
                 {
-                    if (!_mouseInsideWindow)
+                    if (!_pWindowState->mouseInsideWindow)
                     {
-                        _mouseInsideWindow = true;
+                        _pWindowState->mouseInsideWindow = true;
                         OnMouseLeaveWindow();
                     }
                 }

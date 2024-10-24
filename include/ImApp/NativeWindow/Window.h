@@ -20,11 +20,14 @@ namespace NativeWindow
         virtual ~Window();
 
     public:
-        bool Initialize(int width, int height, const std::string& title);
-        bool Initialize(int width, int height, const std::string& title, WindowStyle style);
-        void Clear();
+        bool Create(int width, int height, const std::string& title);
+        bool Create(int width, int height, const std::string& title, WindowStyle style);
+        void Destroy();
+        bool IsWindowValid() const;
 
-        bool EventLoop();
+        /// Process windows messages.
+        /// @param windowDestroyed True is window destroyed after message process.
+        void EventLoop(bool* windowDestroyed);
 
         std::pair<int, int> GetSize();
         void SetSize(int width, int height);
@@ -47,19 +50,16 @@ namespace NativeWindow
         bool GetCursorCapture() const;
         void SetCursorCapture(bool capture);
 
-        bool GetKeyRepeated() const;
-        void SetKeyRepeated(bool repeated);
-
     protected:
         virtual void OnWindowInitialized();
 
-        /// Called when received a windows message.
+        /// Called when windows messages received.
         /// @param message Windows message.
         /// @param wpara WPARAM.
         /// @param lpara LPARAM.
         /// @param result If block original message process, return value of message.
         /// @return Should block original message process.
-        virtual bool WindowEventPreProcess(uint32_t message, void* wpara, void* lpara, int& result);
+        virtual bool WindowEventPreProcess(uint32_t message, void* wpara, void* lpara, int* result);
         virtual void OnWindowClose();
         virtual void OnWindowPreDestroy();
         virtual void OnWindowPostDestroy();
