@@ -4,6 +4,8 @@
 #include <string>
 #include <optional>
 #include <functional>
+#include <memory>
+
 #include "WindowStyle.h"
 #include "WindowState.h"
 #include "ImApp/Utility/NonCopyable.h"
@@ -14,13 +16,15 @@ namespace NativeWindow
 
     class Window: Utility::NonCopyable
     {
-        friend NativeWindowUtility;
     public:
-        Window(int width, int height, const std::string& title);
-        Window(int width, int height, const std::string& title, int style);
+        Window();
         virtual ~Window();
 
     public:
+        bool Initialize(int width, int height, const std::string& title);
+        bool Initialize(int width, int height, const std::string& title, WindowStyle style);
+        void Clear();
+
         bool EventLoop();
         void SetWindowEventProcessFunction(const std::function<bool(void*, uint32_t, void*, void*)>& f);
         void ClearWindowEventProcessFunction();
@@ -50,8 +54,11 @@ namespace NativeWindow
         void SetKeyRepeated(bool repeated);
 
     protected:
+        virtual void OnWindowInitialized();
         virtual bool WindowEventPreProcess(uint32_t message, void* wpara, void* lpara);
         virtual void OnWindowClose();
+        virtual void OnWindowPreDestroy();
+        virtual void OnWindowPostDestroy();
         virtual void OnWindowResize(int width, int height);
         virtual void OnWindowGetFocus();
         virtual void OnWindowLostFocus();
@@ -59,27 +66,15 @@ namespace NativeWindow
         virtual void OnMouseLeaveWindow();
 
     private:
-        void WindowEventProcess(uint32_t message, void* wpara, void* lpara);
+        int WindowEventProcess(uint32_t message, void* wpara, void* lpara);
         void WindowEventProcessInternal(uint32_t message, void* wpara, void* lpara);
         void CaptureCursorInternal(bool doCapture);
 
     private:
-        // Window handle
-        void* _hWindow;
+        friend NativeWindowUtility;
 
-        // State
-        std::pair<int, int> _windowSize;
-        bool _enableKeyRepeat;
-        bool _cursorVisible;
-        bool _cursorCapture;
-        bool _mouseInsideWindow;
-
-        // Resource
-        void* _hIcon;
-        void* _hCursor;
-
-        // Additional handler
-        std::function<bool(void*, uint32_t, void*, void*)> _winEventProcess;
+    private:
+        std::unique_ptr<WindowState> _pWindowState = nullptr;
 
     private:
         static void RegisterWindowClass();

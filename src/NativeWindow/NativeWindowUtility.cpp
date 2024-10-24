@@ -25,22 +25,10 @@ namespace NativeWindow
         }
 
         Window* pWindow = handle ? reinterpret_cast<Window*>(::GetWindowLongPtrW(handle, GWLP_USERDATA)) : nullptr;
-
         if (pWindow)
         {
-            pWindow->WindowEventProcess(message, reinterpret_cast<void*>(wParam), reinterpret_cast<void*>(lParam));
+            return pWindow->WindowEventProcess(message, reinterpret_cast<void*>(wParam), reinterpret_cast<void*>(lParam));
         }
-
-        // If drop WM_CLOSE into DefWindowProcW, window will destroy.
-        // Push message to event queue, and throw it to user.
-        if (message == WM_CLOSE)
-            return 0;
-
-        // Hack the menu system command, so that pressing ALT or F10 doesn't steal the focus
-        if ((message == WM_SYSCOMMAND) && (wParam == SC_KEYMENU))
-            return 0;
-
-        return ::DefWindowProcW(handle, message, wParam, lParam);
     }
 
     std::pair<int, int> NativeWindowUtility::CalculateAdjustWindowSize(int width, int height, DWORD dwStyle)

@@ -2,12 +2,35 @@
 
 namespace NativeWindow
 {
-    enum class WindowStyle: int
+    class WindowStyle
     {
-        None = 0,
-        HaveTitleBar = 1 << 0,
-        HaveResize = 1 << 1,
-        HaveClose = 1 << 2,
-        Default = HaveTitleBar | HaveResize | HaveClose
+    public:
+        enum class Type
+        {
+            Popup,
+            Overlapped
+        };
+
+        struct PopupStyle
+        {
+            // nothing
+        };
+
+        struct OverlappedStyle
+        {
+            bool haveTitleBar = true;
+            bool haveResize = true;
+            bool haveClose = true;
+        };
+
+        union Config
+        {
+            PopupStyle popup;
+            OverlappedStyle overlapped;
+        };
+
+    public:
+        Type type;
+        Config config;
     };
 }

@@ -4,43 +4,52 @@
 #include "ImApp/NativeWindow/Window.h"
 #include "NativeWindowUtility.h"
 
+// Serval paths of window destroyed.
+// 1. Window receive WM_CLOSE, pressed close button for example.
+//    OnWindowClose -> DestroyWindow -> WM_DESTROY -> OnWindowDestroy
+// 2. Call Window::Clear
+//    Window::Clear -> DestroyWindow -> WM_DESTROY -> OnWindowDestroy
+
 namespace NativeWindow
 {
     static int gGlobalWindowsCount = 0;
     static const wchar_t* gWindowRegisterName = L"InfraWindow";
 
-    Window::Window(int width, int height, const std::string& title)
-        : Window(width, height, title, static_cast<int>(WindowStyle::Default))
+    Window::Window()
     {
+        NativeWindowUtility::FixProcessDpi();
     }
 
-    Window::Window(int width, int height, const std::string& title, int style)
-        : _hWindow(nullptr)
-        , _windowSize({width, height})
-        , _cursorVisible(true)
-        , _cursorCapture(false)
-        , _mouseInsideWindow(false)
-        , _hIcon(nullptr)
-        , _hCursor(::LoadCursor(nullptr, IDC_ARROW))
+    Window::~Window()
     {
-        // Fix dpi
-        NativeWindowUtility::FixProcessDpi();
+        Clear();
+    }
 
+    bool Window::Initialize(int width, int height, const std::string& title)
+    {
+        WindowStyle style{};
+        style.type = WindowStyle::Type::Overlapped;
+        style.config.overlapped = WindowStyle::OverlappedStyle();
+        return Initialize(width, height, title, style);
+    }
+
+    bool Window::Initialize(int width, int height, const std::string& title, WindowStyle style)
+    {
         // Register window
         if (gGlobalWindowsCount == 0)
             RegisterWindowClass();
 
         // Get create style
         DWORD win32Style = WS_VISIBLE;
-        if (style == static_cast<int>(WindowStyle::None))
+        if (style.type == WindowStyle::Type::Popup)
             win32Style |= WS_POPUP;
         else
         {
-            if (style & static_cast<int>(WindowStyle::HaveTitleBar))
+            if (style.config.overlapped.haveTitleBar)
                 win32Style |= WS_CAPTION | WS_MINIMIZEBOX;
-            if (style & static_cast<int>(WindowStyle::HaveResize))
+            if (style.config.overlapped.haveResize)
                 win32Style |= WS_THICKFRAME | WS_MAXIMIZEBOX;
-            if (style & static_cast<int>(WindowStyle::HaveClose))
+            if (style.config.overlapped.haveClose)
                 win32Style |= WS_SYSMENU;
         }
 
@@ -56,7 +65,7 @@ namespace NativeWindow
         // Create window
         const auto titleInWideStr = Utility::StringToWideString(title);
         const wchar_t* titleWide = titleInWideStr.c_str();
-        _hWindow = ::CreateWindowW(
+        auto hWindow = ::CreateWindowW(
                 gWindowRegisterName,
                 titleWide,
                 win32Style,
@@ -69,39 +78,34 @@ namespace NativeWindow
                 ::GetModuleHandleW(nullptr),
                 this);
 
-        if (!_hWindow)
-            return;
-
-        // Get device context
-        _hDeviceHandle = ::GetDC(static_cast<HWND>(_hWindow));
+        if (!hWindow)
+            return false;
 
         // Global counting
         gGlobalWindowsCount++;
 
+        // Create window state
+        _pWindowState = std::make_unique<WindowState>();
+        _pWindowState->hWindow = hWindow;
+        _pWindowState->width = width;
+        _pWindowState->height = height;
+
         // Set size again after window creation to avoid some bug.
         SetSize(width, height);
+
+        OnWindowInitialized();
+
+        return true;
     }
 
-    Window::~Window()
+    void Window::Clear()
     {
-        SetCursorVisible(true);
-        ::ReleaseCapture();
 
-        if (_hDeviceHandle)
-            ::ReleaseDC(static_cast<HWND>(_hWindow), static_cast<HDC>(_hDeviceHandle));
-
-        // Icon
-        if (_hIcon != nullptr)
-            ::DestroyIcon(static_cast<HICON>(_hIcon));
 
         // Destroy window
-        ::DestroyWindow(static_cast<HWND>(_hWindow));
+        ::DestroyWindow(static_cast<HWND>(_pWindowState->hWindow));
 
-        // Global counting
-        gGlobalWindowsCount--;
 
-        if (gGlobalWindowsCount == 0)
-            UnRegisterWindowClass();
     }
 
     void Window::RegisterWindowClass()
@@ -127,7 +131,10 @@ namespace NativeWindow
 
     void Window::SetSize(int width, int height)
     {
-        const HWND hWnd = static_cast<HWND>(_hWindow);
+        if (_pWindowState == nullptr)
+            return;
+
+        const HWND hWnd = static_cast<HWND>(_pWindowState->hWindow);
         const DWORD dwStyle = static_cast<DWORD>(::GetWindowLongPtrW(hWnd, GWL_STYLE));
         auto [adjustWidth, adjustHeight] = NativeWindowUtility::CalculateAdjustWindowSize(width, height, dwStyle);
         ::SetWindowPos(hWnd, nullptr, 0, 0, adjustWidth, adjustHeight, SWP_NOMOVE | SWP_NOZORDER);
@@ -135,7 +142,10 @@ namespace NativeWindow
 
     void* Window::GetSystemHandle() const
     {
-        return _hWindow;
+        if (_pWindowState == nullptr)
+            return nullptr;
+
+        return _pWindowState->hWindow;
     }
 
     void Window::SetIcon(unsigned int width, unsigned int height, const std::byte* pixels)
@@ -248,7 +258,32 @@ namespace NativeWindow
 
     void Window::OnWindowClose()
     {
-        ::DestroyWindow((HWND)_hWindow);
+        if (_pWindowState == nullptr)
+            return;
+
+        ::DestroyWindow(static_cast<HWND>(_pWindowState->hWindow));
+    }
+
+    void Window::OnWindowPreDestroy()
+    {
+        if (_pWindowState == nullptr)
+            return;
+
+        SetCursorVisible(true);
+        ::ReleaseCapture();
+
+        // Icon
+        if (_pWindowState->hIcon != nullptr)
+            ::DestroyIcon(static_cast<HICON>(_pWindowState->hIcon));
+    }
+
+    void Window::OnWindowPostDestroy()
+    {
+        // Global counting
+        gGlobalWindowsCount--;
+
+        if (gGlobalWindowsCount == 0)
+            UnRegisterWindowClass();
     }
 
     void Window::OnWindowResize(int width, int height)
@@ -353,13 +388,34 @@ namespace NativeWindow
         _winEventProcess = nullptr;
     }
 
-    void Window::WindowEventProcess(uint32_t message, void* wpara, void* lpara)
+    int Window::WindowEventProcess(uint32_t message, void* wpara, void* lpara)
     {
         bool handled = WindowEventPreProcess(message, wpara, lpara);
         if (handled)
             return;
 
+        // WM_CLOSE in DefWindowProcW will cause WM_DESTROY sent.
+        if (message == WM_CLOSE)
+        {
+            OnWindowClose();
+            return 0;
+        }
+
+        // Hack the menu system command, so that pressing ALT or F10 doesn't steal the focus
+        if ((message == WM_SYSCOMMAND) && (reinterpret_cast<WPARAM>(wpara) == SC_KEYMENU))
+            return 0;
+
         WindowEventProcessInternal(message, wpara, lpara);
+
+        if (message == WM_DESTROY)
+            OnWindowPreDestroy();
+
+        auto ret = ::DefWindowProcW(handle, message, wParam, lParam);
+
+        if (message == WM_DESTROY)
+            OnWindowPostDestroy();
+
+        return ret;
     }
 
     void Window::WindowEventProcessInternal(uint32_t message, void* wpara, void* lpara)
@@ -372,16 +428,6 @@ namespace NativeWindow
 
         switch (message)
         {
-            case WM_DESTROY:
-            {
-                _destroyMessageReceived = true;
-                break;
-            }
-            case WM_CLOSE:
-            {
-                OnWindowClose();
-                break;
-            }
             case WM_SETCURSOR:
             {
                 // lower world of lParam is hit test result
