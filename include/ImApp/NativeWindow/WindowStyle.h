@@ -30,6 +30,15 @@ namespace NativeWindow
         };
 
     public:
+        static WindowStyle DefaultStyle()
+        {
+            WindowStyle style{};
+            style.type = Type::Overlapped;
+            style.config.overlapped = OverlappedStyle();
+            return style;
+        }
+
+    public:
         Type type;
         Config config;
     };

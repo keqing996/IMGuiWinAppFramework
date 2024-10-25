@@ -30,10 +30,7 @@ namespace NativeWindow
 
     bool Window::Create(int width, int height, const std::string& title)
     {
-        WindowStyle style{};
-        style.type = WindowStyle::Type::Overlapped;
-        style.config.overlapped = WindowStyle::OverlappedStyle();
-        return Create(width, height, title, style);
+        return Create(width, height, title, WindowStyle::DefaultStyle());
     }
 
     bool Window::Create(int width, int height, const std::string& title, WindowStyle style)

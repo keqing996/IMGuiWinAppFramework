@@ -8,15 +8,13 @@ using namespace ImApp;
 
 class DemoWindow: public ImGuiWinApp
 {
-public:
-    DemoWindow()
-
-private:
     ImFont* _pChineseFont = nullptr;
 
 protected:
     void OnWindowCreated() override
     {
+        ImGuiWinApp::OnWindowCreated();
+
         static constexpr const char* SYSTEM_MSYH_REGULAR_FONT_PATH = "c:\\Windows\\Fonts\\msyhl.ttc";
         auto defaultFontSize = GetDefaultFontSize();
         _pChineseFont = CreateImGuiFont(SYSTEM_MSYH_REGULAR_FONT_PATH, defaultFontSize);
@@ -37,7 +35,7 @@ protected:
         window_flags |= ImGuiWindowFlags_NoResize;
         window_flags |= ImGuiWindowFlags_NoCollapse;
 
-        Window("Hello, world!", window_flags, [this]()
+        ImWindow("Hello, world!", window_flags, [this]()
         {
             ImGuiIO& io = ImGui::GetIO();
             ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
@@ -188,7 +186,8 @@ protected:
 
 int WINAPI wWinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PWSTR lpCmdLine, int nCmdShow)
 {
-    DemoWindow app(800, 600, "Hello world", (int)NativeWindow::WindowStyle::Default, ImApp::Backend::OpenGL);
+    DemoWindow app;
+    app.Create(800, 600, "Hello world", Backend::OpenGL);
     app.SetVSyncEnable(true);
     app.Loop();
 

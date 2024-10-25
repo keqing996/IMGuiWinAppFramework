@@ -20,9 +20,9 @@ namespace NativeWindow
         virtual ~Window();
 
     public:
-        bool Create(int width, int height, const std::string& title);
-        bool Create(int width, int height, const std::string& title, WindowStyle style);
-        void Destroy();
+        virtual bool Create(int width, int height, const std::string& title);
+        virtual bool Create(int width, int height, const std::string& title, WindowStyle style);
+        virtual void Destroy();
         bool IsWindowValid() const;
 
         /// Process windows messages.

@@ -10,13 +10,17 @@ class ImFontAtlas;
 
 namespace ImApp
 {
-    class ImGuiWinApp : NativeWindow::Window
+    class ImGuiWinApp : private NativeWindow::Window
     {
     public:
-        explicit ImGuiWinApp(Backend backend = Backend::D3d11);
+        ImGuiWinApp();
         ~ImGuiWinApp() override = default;
 
     public:
+        bool Create(int width, int height, const std::string& title) override;
+        bool Create(int width, int height, const std::string& title, Backend backend);
+        bool Create(int width, int height, const std::string& title, Backend backend, NativeWindow::WindowStyle style);
+
         void Loop();
         void CloseWindow();
 

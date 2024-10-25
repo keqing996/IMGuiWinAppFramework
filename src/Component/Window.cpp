@@ -2,7 +2,7 @@
 
 namespace ImApp
 {
-    Window::Window(const char* name, ImGuiWindowFlags flags, const std::function<void()>& impl)
+    ImWindow::ImWindow(const char* name, ImGuiWindowFlags flags, const std::function<void()>& impl)
     {
         ImGui::Begin(name, nullptr, flags);
 
@@ -10,7 +10,7 @@ namespace ImApp
             impl();
     }
 
-    Window::~Window()
+    ImWindow::~ImWindow()
     {
         ImGui::End();
     }

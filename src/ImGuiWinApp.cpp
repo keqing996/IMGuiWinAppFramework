@@ -10,10 +10,37 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg
 
 namespace ImApp
 {
-    ImGuiWinApp::ImGuiWinApp(Backend backend)
-        : _pBackend(ImGuiBackend::Create(this, backend))
+    ImGuiWinApp::ImGuiWinApp()
     {
         std::locale::global(std::locale("zh_CN.UTF8"));
+    }
+
+    bool ImGuiWinApp::Create(int width, int height, const std::string& title)
+    {
+        return Create(width, height, title, Backend::D3d11);
+    }
+
+    bool ImGuiWinApp::Create(int width, int height, const std::string& title, Backend backend)
+    {
+        return Create(width, height, title, backend, NativeWindow::WindowStyle::DefaultStyle());
+    }
+
+    bool ImGuiWinApp::Create(int width, int height, const std::string& title, Backend backend, NativeWindow::WindowStyle style)
+    {
+        bool result = Window::Create(width, height, title, style);
+        if (!result)
+            return false;
+
+        _pBackend = ImGuiBackend::Create(this, backend);
+        _pBackend->SetupDevice();
+
+        ImGuiInitConfig();
+        ImGuiInitFrontend();
+        ImGuiInitBackend();
+
+        InitTheme();
+
+        return true;
     }
 
     void ImGuiWinApp::ImGuiInitConfig()
@@ -114,14 +141,6 @@ namespace ImApp
     void ImGuiWinApp::OnWindowCreated()
     {
         Window::OnWindowCreated();
-
-        _pBackend->SetupDevice();
-
-        ImGuiInitConfig();
-        ImGuiInitFrontend();
-        ImGuiInitBackend();
-
-        InitTheme();
     }
 
     bool ImGuiWinApp::WindowEventPreProcess(uint32_t message, void* wpara, void* lpara, int* result)

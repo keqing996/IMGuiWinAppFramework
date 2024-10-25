@@ -5,10 +5,10 @@
 
 namespace ImApp
 {
-    struct Window
+    struct ImWindow
     {
-        Window(const char* name, ImGuiWindowFlags flags, const std::function<void()>& impl);
+        ImWindow(const char* name, ImGuiWindowFlags flags, const std::function<void()>& impl);
 
-        ~Window();
+        ~ImWindow();
     };
 }
