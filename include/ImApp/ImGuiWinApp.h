@@ -2,7 +2,6 @@
 
 #include <string>
 #include <memory>
-#include <functional>
 #include "ImGuiBackend/ImGuiBackend.h"
 #include "NativeWindow/Window.h"
 
@@ -14,8 +13,8 @@ namespace ImApp
     class ImGuiWinApp : NativeWindow::Window
     {
     public:
-        ImGuiWinApp(int width, int height, const std::string& title, int style = static_cast<int>(NativeWindow::WindowStyle::Default), Backend backend = Backend::D3d11);
-        ~ImGuiWinApp() override;
+        explicit ImGuiWinApp(Backend backend = Backend::D3d11);
+        ~ImGuiWinApp() override = default;
 
     public:
         void Loop();
@@ -27,15 +26,17 @@ namespace ImApp
         void SetClearColor(const Utility::Color& color);
 
     protected:
-        bool WindowEventPreProcess(uint32_t message, void* wpara, void* lpara) override;
+        void OnWindowCreated() override;
+        bool WindowEventPreProcess(uint32_t message, void* wpara, void* lpara, int* result) override;
         void OnWindowClose() override;
+        void OnWindowPreDestroy() override;
+        void OnWindowPostDestroy() override;
         void OnWindowResize(int width, int height) override;
         void OnWindowGetFocus() override;
         void OnWindowLostFocus() override;
         void OnMouseEnterWindow() override;
         void OnMouseLeaveWindow() override;
 
-        virtual void OnWindowInitialized();
         virtual void PreTick();
         virtual void Tick();
         virtual void PostTick();
@@ -52,11 +53,9 @@ namespace ImApp
         void ImGuiInitConfig();
         void ImGuiInitFrontend();
         void ImGuiInitBackend();
-        void InitLocale();
         void InitTheme();
 
     private:
-        bool _breakLoop = false;
         std::unique_ptr<ImGuiBackend> _pBackend = nullptr;
     };
 }

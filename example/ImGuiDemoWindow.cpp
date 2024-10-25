@@ -15,7 +15,7 @@ private:
     ImFont* _pChineseFont = nullptr;
 
 protected:
-    void OnWindowInitialized() override
+    void OnWindowCreated() override
     {
         static constexpr const char* SYSTEM_MSYH_REGULAR_FONT_PATH = "c:\\Windows\\Fonts\\msyhl.ttc";
         auto defaultFontSize = GetDefaultFontSize();

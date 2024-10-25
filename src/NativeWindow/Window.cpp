@@ -96,7 +96,7 @@ namespace NativeWindow
         // Set size again after window creation to avoid some bug.
         SetSize(width, height);
 
-        OnWindowInitialized();
+        OnWindowCreated();
 
         return true;
     }
@@ -269,6 +269,10 @@ namespace NativeWindow
         return false;
     }
 
+    void Window::OnWindowCreated()
+    {
+    }
+
     bool Window::WindowEventPreProcess(uint32_t message, void* wpara, void* lpara, int* result)
     {
         *result = 0;
@@ -298,6 +302,8 @@ namespace NativeWindow
 
     void Window::OnWindowPostDestroy()
     {
+        _pWindowState.reset();
+
         // Global counting
         gGlobalWindowsCount--;
 

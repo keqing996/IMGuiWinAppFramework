@@ -51,7 +51,7 @@ namespace NativeWindow
         void SetCursorCapture(bool capture);
 
     protected:
-        virtual void OnWindowInitialized();
+        virtual void OnWindowCreated();
 
         /// Called when windows messages received.
         /// @param message Windows message.

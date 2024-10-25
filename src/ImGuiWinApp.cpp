@@ -10,28 +10,10 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg
 
 namespace ImApp
 {
-    ImGuiWinApp::ImGuiWinApp(int width, int height, const std::string& title, int style, Backend backend)
-        : Window(width, height, title, style)
+    ImGuiWinApp::ImGuiWinApp(Backend backend)
+        : _pBackend(ImGuiBackend::Create(this, backend))
     {
-        _pBackend = ImGuiBackend::Create(this, backend);
-        _pBackend->SetupDevice();
-
-        InitLocale();
-
-        ImGuiInitConfig();
-        ImGuiInitFrontend();
-        ImGuiInitBackend();
-
-        InitTheme();
-    }
-
-    ImGuiWinApp::~ImGuiWinApp()
-    {
-        _pBackend->ClearImGui();
-        ImGui_ImplWin32_Shutdown();
-        ImGui::DestroyContext();
-
-        _pBackend->ClearDevice();
+        std::locale::global(std::locale("zh_CN.UTF8"));
     }
 
     void ImGuiWinApp::ImGuiInitConfig()
@@ -62,11 +44,6 @@ namespace ImApp
         _pBackend->SetupImGui();
     }
 
-    void ImGuiWinApp::InitLocale()
-    {
-        std::locale::global(std::locale("zh_CN.UTF8"));
-    }
-
     void ImGuiWinApp::InitTheme()
     {
         float dpiScale =  GetDpiScale();
@@ -92,13 +69,11 @@ namespace ImApp
         while (true)
         {
             // Win32 message loop
-            EventLoop();
+            bool finish;
+            EventLoop(&finish);
 
-            if (_breakLoop)
-            {
-                _breakLoop = false;
+            if (finish)
                 break;
-            }
 
             // ImGui new frame setup
             _pBackend->NewFrame();
@@ -136,15 +111,45 @@ namespace ImApp
         _pBackend->SetClearColor(color);
     }
 
-    bool ImGuiWinApp::WindowEventPreProcess(uint32_t message, void* wpara, void* lpara)
+    void ImGuiWinApp::OnWindowCreated()
     {
-        return ImGui_ImplWin32_WndProcHandler(static_cast<HWND>(GetSystemHandle()), message,
+        Window::OnWindowCreated();
+
+        _pBackend->SetupDevice();
+
+        ImGuiInitConfig();
+        ImGuiInitFrontend();
+        ImGuiInitBackend();
+
+        InitTheme();
+    }
+
+    bool ImGuiWinApp::WindowEventPreProcess(uint32_t message, void* wpara, void* lpara, int* result)
+    {
+        *result = ImGui_ImplWin32_WndProcHandler(static_cast<HWND>(GetSystemHandle()), message,
             reinterpret_cast<LPARAM>(wpara), reinterpret_cast<WPARAM>(lpara));
+        return false;
     }
 
     void ImGuiWinApp::OnWindowClose()
     {
         Window::OnWindowClose();
+    }
+
+    void ImGuiWinApp::OnWindowPreDestroy()
+    {
+        _pBackend->ClearImGui();
+        ImGui_ImplWin32_Shutdown();
+        ImGui::DestroyContext();
+
+        _pBackend->ClearDevice();
+
+        Window::OnWindowPreDestroy();
+    }
+
+    void ImGuiWinApp::OnWindowPostDestroy()
+    {
+        Window::OnWindowPostDestroy();
     }
 
     void ImGuiWinApp::OnWindowResize(int width, int height)
@@ -170,10 +175,6 @@ namespace ImApp
     void ImGuiWinApp::OnMouseLeaveWindow()
     {
         Window::OnMouseLeaveWindow();
-    }
-
-    void ImGuiWinApp::OnWindowInitialized()
-    {
     }
 
     void ImGuiWinApp::PreTick()

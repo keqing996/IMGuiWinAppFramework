@@ -25,10 +25,10 @@ namespace NativeWindow
         }
 
         Window* pWindow = handle ? reinterpret_cast<Window*>(::GetWindowLongPtrW(handle, GWLP_USERDATA)) : nullptr;
-        if (pWindow)
-        {
+        if (pWindow && pWindow->IsWindowValid())
             return pWindow->WindowEventProcess(message, reinterpret_cast<void*>(wParam), reinterpret_cast<void*>(lParam));
-        }
+
+        return ::DefWindowProcW(handle, message, wParam, lParam);
     }
 
     std::pair<int, int> NativeWindowUtility::CalculateAdjustWindowSize(int width, int height, DWORD dwStyle)
