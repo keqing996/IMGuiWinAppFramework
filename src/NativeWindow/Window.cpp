@@ -93,6 +93,12 @@ namespace NativeWindow
         SetCursorCapture(false);
         _pWindowState->mouseInsideWindow = CalculateMouseInsideWindow();
 
+        TRACKMOUSEEVENT tme;
+        tme.cbSize = sizeof(TRACKMOUSEEVENT);
+        tme.dwFlags = TME_LEAVE; // enable tracing WM_MOUSELEAVE
+        tme.hwndTrack = hWindow;
+        ::TrackMouseEvent(&tme);
+
         // Set size again after window creation to avoid some bug.
         SetSize(width, height);
 
@@ -264,9 +270,9 @@ namespace NativeWindow
     bool Window::GetCursorVisible() const
     {
         if (_pWindowState == nullptr)
-            return _pWindowState->cursorVisible;
+            return false;
 
-        return false;
+        return _pWindowState->cursorVisible;
     }
 
     bool Window::GetCursorCapture() const
@@ -520,15 +526,11 @@ namespace NativeWindow
                 OnWindowLostFocus();
                 break;
             }
-
             case WM_MOUSEMOVE:
             {
                 const HWND hWnd = static_cast<HWND>(_pWindowState->hWindow);
                 const int x = static_cast<int16_t>(LOWORD(lParam));
                 const int y = static_cast<int16_t>(HIWORD(lParam));
-
-                RECT area;
-                ::GetClientRect(hWnd, &area);
 
                 // Capture the mouse in case the user wants to drag it outside
                 if ((wParam & (MK_LBUTTON | MK_MBUTTON | MK_RBUTTON | MK_XBUTTON1 | MK_XBUTTON2)) == 0)
@@ -541,22 +543,22 @@ namespace NativeWindow
                     ::SetCapture(hWnd);
                 }
 
-                // Mouse is out of window
-                if ((x < area.left) || (x > area.right) || (y < area.top) || (y > area.bottom))
+                // Mouse inside window
+                if (!_pWindowState->mouseInsideWindow)
                 {
-                    if (_pWindowState->mouseInsideWindow)
-                    {
-                        _pWindowState->mouseInsideWindow = false;
-                        OnMouseEnterWindow();
-                    }
+                    _pWindowState->mouseInsideWindow = true;
+                    OnMouseEnterWindow();
                 }
-                else
+                break;
+            }
+            // WM_MOUSELEAVE will be received only if ::TrackMouseEvent enabled.
+            case WM_MOUSELEAVE:
+            {
+                // Mouse outside window
+                if (_pWindowState->mouseInsideWindow)
                 {
-                    if (!_pWindowState->mouseInsideWindow)
-                    {
-                        _pWindowState->mouseInsideWindow = true;
-                        OnMouseLeaveWindow();
-                    }
+                    _pWindowState->mouseInsideWindow = false;
+                    OnMouseLeaveWindow();
                 }
                 break;
             }
