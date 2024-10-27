@@ -309,6 +309,13 @@ namespace NativeWindow
         SetCursorVisible(true);
         ::ReleaseCapture();
 
+        // Release cursor tracking
+        TRACKMOUSEEVENT tme;
+        tme.cbSize = sizeof(TRACKMOUSEEVENT);
+        tme.dwFlags = TME_CANCEL;
+        tme.hwndTrack = static_cast<HWND>(_pWindowState->hWindow);
+        ::TrackMouseEvent(&tme);
+
         // Icon
         if (_pWindowState->hIcon != nullptr)
             ::DestroyIcon(static_cast<HICON>(_pWindowState->hIcon));
@@ -529,9 +536,8 @@ namespace NativeWindow
             case WM_MOUSEMOVE:
             {
                 const HWND hWnd = static_cast<HWND>(_pWindowState->hWindow);
-                const int x = static_cast<int16_t>(LOWORD(lParam));
-                const int y = static_cast<int16_t>(HIWORD(lParam));
 
+                // todo fix this
                 // Capture the mouse in case the user wants to drag it outside
                 if ((wParam & (MK_LBUTTON | MK_MBUTTON | MK_RBUTTON | MK_XBUTTON1 | MK_XBUTTON2)) == 0)
                 {

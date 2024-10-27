@@ -19,7 +19,7 @@ namespace ImApp
     public:
         bool Create(int width, int height, const std::string& title);
         bool Create(int width, int height, const std::string& title, Backend backend);
-        bool Create(int width, int height, const std::string& title, NativeWindow::WindowStyle style) override;
+        bool Create(int width, int height, const std::string& title, NativeWindow::WindowStyle style) final;
         bool Create(int width, int height, const std::string& title, Backend backend, NativeWindow::WindowStyle style);
 
         void Loop();
