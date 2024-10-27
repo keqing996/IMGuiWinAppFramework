@@ -8,6 +8,7 @@ namespace ImApp
     class ImGuiBackendOpenGL: public ImGuiBackend
     {
     public:
+        Backend GetBackendType() const override;
         void SetupDevice() override;
         void SetupImGui() override;
         void ClearImGui() override;

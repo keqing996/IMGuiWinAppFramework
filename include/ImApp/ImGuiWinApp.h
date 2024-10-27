@@ -10,15 +10,16 @@ class ImFontAtlas;
 
 namespace ImApp
 {
-    class ImGuiWinApp : private NativeWindow::Window
+    class ImGuiWinApp : public NativeWindow::Window
     {
     public:
         ImGuiWinApp();
         ~ImGuiWinApp() override = default;
 
     public:
-        bool Create(int width, int height, const std::string& title) override;
+        bool Create(int width, int height, const std::string& title);
         bool Create(int width, int height, const std::string& title, Backend backend);
+        bool Create(int width, int height, const std::string& title, NativeWindow::WindowStyle style) override;
         bool Create(int width, int height, const std::string& title, Backend backend, NativeWindow::WindowStyle style);
 
         void Loop();
@@ -29,9 +30,12 @@ namespace ImApp
         bool GetVSyncEnable() const;
         void SetClearColor(const Utility::Color& color);
 
+        // Backend
+        std::optional<Backend> GetBackendType() const;
+
     protected:
         void OnWindowCreated() override;
-        bool WindowEventPreProcess(uint32_t message, void* wpara, void* lpara, int* result) override;
+        bool NativeWindowEventPreProcess(uint32_t message, void* wpara, void* lpara, int* result) override;
         void OnWindowClose() override;
         void OnWindowPreDestroy() override;
         void OnWindowPostDestroy() override;
@@ -41,6 +45,7 @@ namespace ImApp
         void OnMouseEnterWindow() override;
         void OnMouseLeaveWindow() override;
 
+        virtual void OnImGuiInitialized();
         virtual void PreTick();
         virtual void Tick();
         virtual void PostTick();

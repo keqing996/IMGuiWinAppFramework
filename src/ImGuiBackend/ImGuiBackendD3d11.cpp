@@ -5,6 +5,11 @@
 
 namespace ImApp
 {
+    Backend ImGuiBackendD3d11::GetBackendType() const
+    {
+        return Backend::D3d11;
+    }
+
     void ImGuiBackendD3d11::SetupDevice()
     {
         HWND hWnd = static_cast<HWND>(_pWindow->GetSystemHandle());

@@ -20,9 +20,8 @@ namespace NativeWindow
         virtual ~Window();
 
     public:
-        virtual bool Create(int width, int height, const std::string& title);
         virtual bool Create(int width, int height, const std::string& title, WindowStyle style);
-        virtual void Destroy();
+        void Destroy();
         bool IsWindowValid() const;
 
         /// Process windows messages.
@@ -50,6 +49,8 @@ namespace NativeWindow
         bool GetCursorCapture() const;
         void SetCursorCapture(bool capture);
 
+        bool IsMouseInsideWindow() const;
+
     protected:
         virtual void OnWindowCreated();
 
@@ -59,7 +60,7 @@ namespace NativeWindow
         /// @param lpara LPARAM.
         /// @param result If block original message process, return value of message.
         /// @return Should block original message process.
-        virtual bool WindowEventPreProcess(uint32_t message, void* wpara, void* lpara, int* result);
+        virtual bool NativeWindowEventPreProcess(uint32_t message, void* wpara, void* lpara, int* result);
         virtual void OnWindowClose();
         virtual void OnWindowPreDestroy();
         virtual void OnWindowPostDestroy();
@@ -73,6 +74,7 @@ namespace NativeWindow
         int WindowEventProcess(uint32_t message, void* wpara, void* lpara);
         void WindowEventProcessInternal(uint32_t message, void* wpara, void* lpara);
         void CaptureCursorInternal(bool doCapture);
+        bool CalculateMouseInsideWindow() const;
 
     private:
         friend NativeWindowUtility;

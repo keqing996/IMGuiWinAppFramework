@@ -8,6 +8,11 @@
 
 namespace ImApp
 {
+    Backend ImGuiBackendOpenGL::GetBackendType() const
+    {
+        return Backend::OpenGL;
+    }
+
     // https://www.khronos.org/opengl/wiki/Creating_an_OpenGL_Context_(WGL)
     void ImGuiBackendOpenGL::SetupDevice()
     {

@@ -11,7 +11,7 @@ class DemoWindow: public ImGuiWinApp
     ImFont* _pChineseFont = nullptr;
 
 protected:
-    void OnWindowCreated() override
+    void OnImGuiInitialized() override
     {
         ImGuiWinApp::OnWindowCreated();
 
@@ -38,7 +38,15 @@ protected:
         ImWindow("Hello, world!", window_flags, [this]()
         {
             ImGuiIO& io = ImGui::GetIO();
-            ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
+            ImGui::SeparatorText("Native Window States");
+
+            bool cursorVisible = GetCursorVisible();
+            ImGui::Checkbox("CursorVisible", &cursorVisible);
+
+            bool mouseInside = IsMouseInsideWindow();
+            ImGui::Checkbox("MouseInsideWindow", &mouseInside);
+
+            ImGui::SeparatorText("ImGui Test");
 
             ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
 

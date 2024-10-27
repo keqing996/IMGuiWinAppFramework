@@ -3,6 +3,11 @@
 
 namespace ImApp
 {
+    Backend ImGuiBackendVulkan::GetBackendType() const
+    {
+        return Backend::Vulkan;
+    }
+
     void ImGuiBackendVulkan::SetupDevice()
     {
     }

@@ -28,11 +28,6 @@ namespace NativeWindow
         Destroy();
     }
 
-    bool Window::Create(int width, int height, const std::string& title)
-    {
-        return Create(width, height, title, WindowStyle::DefaultStyle());
-    }
-
     bool Window::Create(int width, int height, const std::string& title, WindowStyle style)
     {
         // Register window
@@ -89,6 +84,14 @@ namespace NativeWindow
         _pWindowState->hWindow = hWindow;
         _pWindowState->width = width;
         _pWindowState->height = height;
+
+        // Cursor
+        _pWindowState->hCursor = ::LoadCursor(nullptr, IDC_ARROW);
+        _pWindowState->cursorVisible = true;
+        SetWindowVisible(true);
+        _pWindowState->cursorCapture = false;
+        SetCursorCapture(false);
+        _pWindowState->mouseInsideWindow = CalculateMouseInsideWindow();
 
         // Set size again after window creation to avoid some bug.
         SetSize(width, height);
@@ -250,6 +253,14 @@ namespace NativeWindow
         CaptureCursorInternal(_pWindowState->cursorCapture);
     }
 
+    bool Window::IsMouseInsideWindow() const
+    {
+        if (_pWindowState == nullptr)
+            return false;
+
+        return _pWindowState->mouseInsideWindow;
+    }
+
     bool Window::GetCursorVisible() const
     {
         if (_pWindowState == nullptr)
@@ -270,7 +281,7 @@ namespace NativeWindow
     {
     }
 
-    bool Window::WindowEventPreProcess(uint32_t message, void* wpara, void* lpara, int* result)
+    bool Window::NativeWindowEventPreProcess(uint32_t message, void* wpara, void* lpara, int* result)
     {
         *result = 0;
         return false;
@@ -411,13 +422,33 @@ namespace NativeWindow
         }
     }
 
+    bool Window::CalculateMouseInsideWindow() const
+    {
+        if (_pWindowState == nullptr)
+            return false;
+
+        POINT cursorPos;
+        if (!::GetCursorPos(&cursorPos))
+            return false;
+
+        const HWND hWnd = static_cast<HWND>(_pWindowState->hWindow);
+        POINT clientPoint = cursorPos;
+        ::ScreenToClient(hWnd, &clientPoint);
+
+        RECT clientRect;
+        ::GetClientRect(hWnd, &clientRect);
+
+        return (clientPoint.x >= 0 && clientPoint.x < clientRect.right &&
+            clientPoint.y >= 0 && clientPoint.y < clientRect.bottom);
+    }
+
     int Window::WindowEventProcess(uint32_t message, void* wpara, void* lpara)
     {
         if (_pWindowState == nullptr)
             return 0;
 
         int ret;
-        bool blockProcess = WindowEventPreProcess(message, wpara, lpara, &ret);
+        bool blockProcess = NativeWindowEventPreProcess(message, wpara, lpara, &ret);
         if (blockProcess)
             return ret;
 

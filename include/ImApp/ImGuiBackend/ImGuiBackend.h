@@ -17,6 +17,7 @@ namespace ImApp
         static std::unique_ptr<ImGuiBackend> Create(NativeWindow::Window* pWindow, Backend backend);
 
     public:
+        virtual Backend GetBackendType() const = 0;
         virtual void SetupDevice() = 0;
         virtual void SetupImGui() = 0;
         virtual void ClearImGui() = 0;

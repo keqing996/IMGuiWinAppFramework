@@ -9,6 +9,7 @@ namespace ImApp
     class ImGuiBackendD3d11: public ImGuiBackend
     {
     public:
+        Backend GetBackendType() const override;
         void SetupDevice() override;
         void SetupImGui() override;
         void ClearImGui() override;

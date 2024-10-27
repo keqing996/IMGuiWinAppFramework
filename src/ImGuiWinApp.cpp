@@ -25,6 +25,11 @@ namespace ImApp
         return Create(width, height, title, backend, NativeWindow::WindowStyle::DefaultStyle());
     }
 
+    bool ImGuiWinApp::Create(int width, int height, const std::string& title, NativeWindow::WindowStyle style)
+    {
+        return Create(width, height, title, Backend::D3d11, style);
+    }
+
     bool ImGuiWinApp::Create(int width, int height, const std::string& title, Backend backend, NativeWindow::WindowStyle style)
     {
         bool result = Window::Create(width, height, title, style);
@@ -39,6 +44,8 @@ namespace ImApp
         ImGuiInitBackend();
 
         InitTheme();
+
+        OnImGuiInitialized();
 
         return true;
     }
@@ -138,12 +145,20 @@ namespace ImApp
         _pBackend->SetClearColor(color);
     }
 
+    std::optional<Backend> ImGuiWinApp::GetBackendType() const
+    {
+        if (_pBackend == nullptr)
+            return std::nullopt;
+
+        return _pBackend->GetBackendType();
+    }
+
     void ImGuiWinApp::OnWindowCreated()
     {
         Window::OnWindowCreated();
     }
 
-    bool ImGuiWinApp::WindowEventPreProcess(uint32_t message, void* wpara, void* lpara, int* result)
+    bool ImGuiWinApp::NativeWindowEventPreProcess(uint32_t message, void* wpara, void* lpara, int* result)
     {
         *result = ImGui_ImplWin32_WndProcHandler(static_cast<HWND>(GetSystemHandle()), message,
             reinterpret_cast<LPARAM>(wpara), reinterpret_cast<WPARAM>(lpara));
@@ -194,6 +209,10 @@ namespace ImApp
     void ImGuiWinApp::OnMouseLeaveWindow()
     {
         Window::OnMouseLeaveWindow();
+    }
+
+    void ImGuiWinApp::OnImGuiInitialized()
+    {
     }
 
     void ImGuiWinApp::PreTick()
