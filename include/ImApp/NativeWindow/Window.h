@@ -26,8 +26,7 @@ namespace NativeWindow
         /// @param title Window title in UTF8.
         /// @param style Window style.
         /// @return Create success.
-        virtual
-        bool Create(int width, int height, const std::string& title, WindowStyle style);
+        virtual bool Create(int width, int height, const std::string& title, WindowStyle style);
 
         /// Destroy window instance.
         void Destroy();
@@ -66,14 +65,22 @@ namespace NativeWindow
         /// Set window title in UTF8.
         void SetTitle(const std::string& title);
 
+        /// Set window visible.
         void SetWindowVisible(bool show);
 
+        /// Get is cursor visible.
         bool IsCursorVisible() const;
-        virtual void SetCursorVisible(bool show);
 
+        /// Set cursor visible.
+        void SetCursorVisible(bool show);
+
+        /// Get is cursor captured.
         bool GetCursorCapture() const;
+
+        /// Set cursor captured.
         void SetCursorCapture(bool capture);
 
+        /// Get is mouse inside window now (frame not included).
         bool IsMouseInsideWindow() const;
 
     protected:
@@ -94,6 +101,7 @@ namespace NativeWindow
         virtual void OnWindowLostFocus();
         virtual void OnMouseEnterWindow();
         virtual void OnMouseLeaveWindow();
+        virtual void OnCursorVisibleStateChange();
 
     private:
         int WindowEventProcess(uint32_t message, void* wpara, void* lpara);

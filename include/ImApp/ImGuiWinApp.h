@@ -30,7 +30,7 @@ namespace ImApp
         bool GetVSyncEnable() const;
         void SetClearColor(const Utility::Color& color);
 
-        void SetCursorVisible(bool show) override;
+        void OnCursorVisibleStateChange() override;
 
         // Backend
         std::optional<Backend> GetBackendType() const;

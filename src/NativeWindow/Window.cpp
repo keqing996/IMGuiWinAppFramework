@@ -249,6 +249,7 @@ namespace NativeWindow
 
         _pWindowState->cursorVisible = show;
         ::SetCursor(show ? static_cast<HCURSOR>(_pWindowState->hCursor) : nullptr);
+        OnCursorVisibleStateChange();
     }
 
     void Window::SetCursorCapture(bool capture)
@@ -350,6 +351,10 @@ namespace NativeWindow
     }
 
     void Window::OnMouseLeaveWindow()
+    {
+    }
+
+    void Window::OnCursorVisibleStateChange()
     {
     }
 

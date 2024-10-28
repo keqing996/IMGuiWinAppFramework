@@ -148,16 +148,16 @@ namespace ImApp
         _pBackend->SetClearColor(color);
     }
 
-    void ImGuiWinApp::SetCursorVisible(bool show)
+    void ImGuiWinApp::OnCursorVisibleStateChange()
     {
+        Window::OnCursorVisibleStateChange();
+
         auto pCurrentContext = ImGui::GetCurrentContext();
         if (pCurrentContext != nullptr)
         {
             ImGuiIO& io = pCurrentContext->IO;
-            io.ConfigFlags |= show ? !ImGuiConfigFlags_NoMouseCursorChange : ImGuiConfigFlags_NoMouseCursorChange;
+            io.ConfigFlags |= IsCursorVisible() ? !ImGuiConfigFlags_NoMouseCursorChange : ImGuiConfigFlags_NoMouseCursorChange;
         }
-
-        Window::SetCursorVisible(show);
     }
 
     std::optional<Backend> ImGuiWinApp::GetBackendType() const
