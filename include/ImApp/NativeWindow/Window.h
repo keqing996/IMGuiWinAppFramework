@@ -74,14 +74,14 @@ namespace NativeWindow
         /// Set cursor visible.
         void SetCursorVisible(bool show);
 
-        /// Get is cursor captured.
-        bool GetCursorCapture() const;
+        /// Is cursor limited in window client area.
+        bool IsCursorLimitedInWindow() const;
 
-        /// Set cursor captured.
-        void SetCursorCapture(bool capture);
+        /// Set cursor limited in window client area.
+        void SetCursorLimitedInWindow(bool capture);
 
-        /// Get is mouse inside window now (frame not included).
-        bool IsMouseInsideWindow() const;
+        /// Get is cursor inside window now (frame not included).
+        bool IsCursorInsideWindow() const;
 
     protected:
         virtual void OnWindowCreated();
@@ -106,7 +106,7 @@ namespace NativeWindow
     private:
         int WindowEventProcess(uint32_t message, void* wpara, void* lpara);
         void WindowEventProcessInternal(uint32_t message, void* wpara, void* lpara);
-        void CaptureCursorInternal(bool doCapture);
+        void SetCursorLimitedInWindowInternal(bool doCapture);
         bool CalculateMouseInsideWindow() const;
 
     private:

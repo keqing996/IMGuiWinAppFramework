@@ -90,9 +90,9 @@ namespace NativeWindow
         _pWindowState->hCursor = ::LoadCursor(nullptr, IDC_ARROW);
         _pWindowState->cursorVisible = true;
         SetWindowVisible(true);
-        _pWindowState->cursorCapture = false;
-        SetCursorCapture(false);
-        _pWindowState->mouseInsideWindow = CalculateMouseInsideWindow();
+        _pWindowState->cursorLimitedInWindow = false;
+        SetCursorLimitedInWindow(false);
+        _pWindowState->cursorInsideWindow = CalculateMouseInsideWindow();
 
         TRACKMOUSEEVENT tme;
         tme.cbSize = sizeof(TRACKMOUSEEVENT);
@@ -252,21 +252,21 @@ namespace NativeWindow
         OnCursorVisibleStateChange();
     }
 
-    void Window::SetCursorCapture(bool capture)
+    void Window::SetCursorLimitedInWindow(bool capture)
     {
         if (_pWindowState == nullptr)
             return;
 
-        _pWindowState->cursorCapture = capture;
-        CaptureCursorInternal(_pWindowState->cursorCapture);
+        _pWindowState->cursorLimitedInWindow = capture;
+        SetCursorLimitedInWindowInternal(_pWindowState->cursorLimitedInWindow);
     }
 
-    bool Window::IsMouseInsideWindow() const
+    bool Window::IsCursorInsideWindow() const
     {
         if (_pWindowState == nullptr)
             return false;
 
-        return _pWindowState->mouseInsideWindow;
+        return _pWindowState->cursorInsideWindow;
     }
 
     bool Window::IsCursorVisible() const
@@ -277,10 +277,10 @@ namespace NativeWindow
         return _pWindowState->cursorVisible;
     }
 
-    bool Window::GetCursorCapture() const
+    bool Window::IsCursorLimitedInWindow() const
     {
         if (_pWindowState == nullptr)
-            return _pWindowState->cursorCapture;
+            return _pWindowState->cursorLimitedInWindow;
 
         return false;
     }
@@ -404,8 +404,8 @@ namespace NativeWindow
                 SWP_NOSIZE | SWP_NOZORDER);
 
         // Adjust cursor position
-        if(_pWindowState->cursorCapture)
-            SetCursorCapture(true);
+        if(_pWindowState->cursorLimitedInWindow)
+            SetCursorLimitedInWindow(true);
     }
 
     void Window::EventLoop(bool* windowDestroyed)
@@ -421,7 +421,7 @@ namespace NativeWindow
         *windowDestroyed = !IsWindowValid();
     }
 
-    void Window::CaptureCursorInternal(bool doCapture)
+    void Window::SetCursorLimitedInWindowInternal(bool doCapture)
     {
         if (doCapture)
         {
@@ -529,13 +529,13 @@ namespace NativeWindow
             }
             case WM_SETFOCUS:
             {
-                CaptureCursorInternal(_pWindowState->cursorCapture);
+                SetCursorLimitedInWindowInternal(_pWindowState->cursorLimitedInWindow);
                 OnWindowGetFocus();
                 break;
             }
             case WM_KILLFOCUS:
             {
-                CaptureCursorInternal(false);
+                SetCursorLimitedInWindowInternal(false);
                 OnWindowLostFocus();
                 break;
             }
@@ -555,9 +555,9 @@ namespace NativeWindow
                 }
 
                 // Mouse inside window
-                if (!_pWindowState->mouseInsideWindow)
+                if (!_pWindowState->cursorInsideWindow)
                 {
-                    _pWindowState->mouseInsideWindow = true;
+                    _pWindowState->cursorInsideWindow = true;
                     OnMouseEnterWindow();
                 }
                 break;
@@ -566,9 +566,9 @@ namespace NativeWindow
             case WM_MOUSELEAVE:
             {
                 // Mouse outside window
-                if (_pWindowState->mouseInsideWindow)
+                if (_pWindowState->cursorInsideWindow)
                 {
-                    _pWindowState->mouseInsideWindow = false;
+                    _pWindowState->cursorInsideWindow = false;
                     OnMouseLeaveWindow();
                 }
                 break;

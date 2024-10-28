@@ -1,8 +1,7 @@
 #include <format>
 #include <Windows.h>
 #include "ImApp/ImGuiWinApp.h"
-#include "ImApp/Component/Window.h"
-#include "ImApp/Component/SameLine.h"
+#include "imgui.h"
 
 using namespace ImApp;
 
@@ -50,28 +49,22 @@ protected:
 
         ImGui::SliderFloat("float", &f, 0.0f, 1.0f); // Edit 1 float using a slider from 0.0f to 1.0f
 
-        SameLine({
-            []() -> void
-            {
-                if (ImGui::Button("Button"))
-                    // Buttons return true when clicked (most widgets return true when edited/activated)
-                    counter++;
-            },
-            []() -> void
-            {
-                if (ImGui::SmallButton("SmallButton"))
-                    counter++;
-            },
-            []() -> void
-            {
-                if (ImGui::ArrowButton("ArrowButton", ImGuiDir_Up))
-                    counter++;
-            },
-            []() -> void
-            {
-                ImGui::Text("counter = %d", counter);
-            }
-        });
+        if (ImGui::Button("Button"))
+            counter++;
+
+        ImGui::SameLine();
+
+        if (ImGui::SmallButton("SmallButton"))
+            counter++;
+
+        ImGui::SameLine();
+
+        if (ImGui::ArrowButton("ArrowButton", ImGuiDir_Up))
+            counter++;
+
+        ImGui::SameLine();
+
+        ImGui::Text("counter = %d", counter);
 
         ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
 
@@ -211,16 +204,30 @@ protected:
 
         ImGui::SameLine();
 
-        bool mouseInside = IsMouseInsideWindow();
+        bool mouseInside = IsCursorInsideWindow();
         ImGui::Checkbox("MouseInsideWindow", &mouseInside);
+
+        ImGui::SameLine();
+
+        bool limitInWindow = IsCursorLimitedInWindow();
+        ImGui::Checkbox("LimitInWindow", &limitInWindow);
 
         ImGui::Bullet();
         ImGui::Text("Press K to toggle mouse visible");
+
+        ImGui::Bullet();
+        ImGui::Text("Press G to toggle mouse limited in window");
 
         if (ImGui::IsKeyPressed(ImGuiKey_K))
         {
             bool current = IsCursorVisible();
             SetCursorVisible(!current);
+        }
+
+        if (ImGui::IsKeyPressed(ImGuiKey_G))
+        {
+            bool current = IsCursorLimitedInWindow();
+            SetCursorLimitedInWindow(!current);
         }
     }
 };
