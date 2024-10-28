@@ -3,6 +3,7 @@
 #include "ImApp/Utility/String.h"
 #include "ImApp/NativeWindow/Window.h"
 
+#include <iostream>
 #include <vector>
 
 #include "NativeWindowUtility.h"

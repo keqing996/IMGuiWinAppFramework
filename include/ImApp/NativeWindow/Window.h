@@ -20,31 +20,56 @@ namespace NativeWindow
         virtual ~Window();
 
     public:
-        virtual bool Create(int width, int height, const std::string& title, WindowStyle style);
+        /// Create window instance.
+        /// @param width Window width.
+        /// @param height Window height.
+        /// @param title Window title in UTF8.
+        /// @param style Window style.
+        /// @return Create success.
+        virtual
+        bool Create(int width, int height, const std::string& title, WindowStyle style);
+
+        /// Destroy window instance.
         void Destroy();
+
+        /// Check is window instance created.
         bool IsWindowValid() const;
 
         /// Process windows messages.
         /// @param windowDestroyed True is window destroyed after message process.
         void EventLoop(bool* windowDestroyed);
 
+        /// Get native window's size.
         std::pair<int, int> GetSize();
+
+        /// Set native window's size.
         void SetSize(int width, int height);
 
+        /// Get native window's position in screen.
         std::pair<int, int> GetPosition();
+
+        /// Set native window's position in screen.
         void SetPosition(int x, int y);
 
+        /// Get native window handle, which is HWND in this case.
         void* GetSystemHandle() const;
 
+        /// Set icon of window through bytes in memory.
+        /// @param width Icon width.
+        /// @param height Icon height.
+        /// @param pixels Icon bytes data in RGBA.
         void SetIcon(unsigned int width, unsigned int height, const std::byte* pixels);
+
+        /// Set icon of window through windows resource id.
         void SetIcon(int iconResId);
 
+        /// Set window title in UTF8.
         void SetTitle(const std::string& title);
 
         void SetWindowVisible(bool show);
 
         bool IsCursorVisible() const;
-        void SetCursorVisible(bool show);
+        virtual void SetCursorVisible(bool show);
 
         bool GetCursorCapture() const;
         void SetCursorCapture(bool capture);

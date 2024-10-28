@@ -2,6 +2,9 @@
 #include <imgui.h>
 #include <backends/imgui_impl_win32.h>
 #include "ImApp/ImGuiWinApp.h"
+
+#include <imgui_internal.h>
+
 #include "ImApp/Theme/Spectrum.h"
 #include <locale>
 #include "ImApp/Font/SansProRegular.h"
@@ -143,6 +146,18 @@ namespace ImApp
     void ImGuiWinApp::SetClearColor(const Utility::Color& color)
     {
         _pBackend->SetClearColor(color);
+    }
+
+    void ImGuiWinApp::SetCursorVisible(bool show)
+    {
+        auto pCurrentContext = ImGui::GetCurrentContext();
+        if (pCurrentContext != nullptr)
+        {
+            ImGuiIO& io = pCurrentContext->IO;
+            io.ConfigFlags |= show ? !ImGuiConfigFlags_NoMouseCursorChange : ImGuiConfigFlags_NoMouseCursorChange;
+        }
+
+        Window::SetCursorVisible(show);
     }
 
     std::optional<Backend> ImGuiWinApp::GetBackendType() const
