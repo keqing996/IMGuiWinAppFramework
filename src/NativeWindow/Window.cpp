@@ -267,7 +267,7 @@ namespace NativeWindow
         return _pWindowState->mouseInsideWindow;
     }
 
-    bool Window::GetCursorVisible() const
+    bool Window::IsCursorVisible() const
     {
         if (_pWindowState == nullptr)
             return false;
@@ -537,7 +537,6 @@ namespace NativeWindow
             {
                 const HWND hWnd = static_cast<HWND>(_pWindowState->hWindow);
 
-                // todo fix this
                 // Capture the mouse in case the user wants to drag it outside
                 if ((wParam & (MK_LBUTTON | MK_MBUTTON | MK_RBUTTON | MK_XBUTTON1 | MK_XBUTTON2)) == 0)
                 {

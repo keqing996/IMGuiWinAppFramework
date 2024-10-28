@@ -43,7 +43,7 @@ namespace NativeWindow
 
         void SetWindowVisible(bool show);
 
-        bool GetCursorVisible() const;
+        bool IsCursorVisible() const;
         void SetCursorVisible(bool show);
 
         bool GetCursorCapture() const;
