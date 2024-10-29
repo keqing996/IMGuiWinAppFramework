@@ -1,9 +1,7 @@
 #pragma once
 
 #include <memory>
-#include <ImApp/NativeWindow/Window.h>
-
-#include "ImApp/Utility/Color.h"
+#include <NativeWindow/Window.h>
 #include "ImGuiBackendType.h"
 
 namespace ImApp
@@ -25,7 +23,7 @@ namespace ImApp
         virtual void NewFrame() = 0;
         virtual void Draw() = 0;
         virtual void SwapBuffer() = 0;
-        virtual void SetClearColor(const Utility::Color& color) = 0;
+        virtual void SetClearColor(float r, float g, float b, float a) = 0;
 
     protected:
         virtual void OnVSyncEnableSettle() = 0;

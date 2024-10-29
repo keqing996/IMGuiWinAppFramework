@@ -1,5 +1,5 @@
 #include "ImGuiBackendOpenGL.h"
-#include "ImApp/Utility/WindowsInclude.h"
+#include "NativeWindow/WindowsInclude.h"
 #include <backends/imgui_impl_opengl3.h>
 #include <glad/gl.h>
 #include <glad/wgl.h>
@@ -94,12 +94,12 @@ namespace ImApp
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     }
 
-    void ImGuiBackendOpenGL::SetClearColor(const Utility::Color& color)
+    void ImGuiBackendOpenGL::SetClearColor(float r, float g, float b, float a)
     {
-        _clearColor[0] = color.GetRed();
-        _clearColor[1] = color.GetGreen();
-        _clearColor[2] = color.GetBlue();
-        _clearColor[3] = color.GetAlpha();
+        _clearColor[0] = r;
+        _clearColor[1] = g;
+        _clearColor[2] = b;
+        _clearColor[3] = a;
     }
 
     void ImGuiBackendOpenGL::SwapBuffer()

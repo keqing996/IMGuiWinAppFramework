@@ -15,7 +15,7 @@ namespace ImApp
         void ClearDevice() override;
         void NewFrame() override;
         void Draw() override;
-        void SetClearColor(const Utility::Color& color) override;
+        void SetClearColor(float r, float g, float b, float a) override;
         void SwapBuffer() override;
 
     protected:

@@ -1,4 +1,4 @@
-#include "ImApp/Utility/WindowsInclude.h"
+#include "NativeWindow/WindowsInclude.h"
 #include <imgui.h>
 #include <backends/imgui_impl_win32.h>
 #include "ImApp/ImGuiWinApp.h"
@@ -143,9 +143,9 @@ namespace ImApp
         return _pBackend->GetVSyncEnable();
     }
 
-    void ImGuiWinApp::SetClearColor(const Utility::Color& color)
+    void ImGuiWinApp::SetClearColor(float r, float g, float b, float a)
     {
-        _pBackend->SetClearColor(color);
+        _pBackend->SetClearColor(r, g, b, a);
     }
 
     void ImGuiWinApp::OnCursorVisibleStateChange()

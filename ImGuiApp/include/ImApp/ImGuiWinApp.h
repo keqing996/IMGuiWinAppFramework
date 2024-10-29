@@ -28,7 +28,7 @@ namespace ImApp
         // Option
         void SetVSyncEnable(bool enable);
         bool GetVSyncEnable() const;
-        void SetClearColor(const Utility::Color& color);
+        void SetClearColor(float r, float g, float b, float a);
 
         void OnCursorVisibleStateChange() override;
 

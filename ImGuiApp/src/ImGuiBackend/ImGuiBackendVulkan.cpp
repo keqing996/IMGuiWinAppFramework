@@ -32,7 +32,7 @@ namespace ImApp
     {
     }
 
-    void ImGuiBackendVulkan::SetClearColor(const Utility::Color& color)
+    void ImGuiBackendVulkan::SetClearColor(float r, float g, float b, float a)
     {
     }
 
