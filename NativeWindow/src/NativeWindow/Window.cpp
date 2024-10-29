@@ -1,7 +1,7 @@
 
-#include "ImApp/Utility/WindowsInclude.h"
-#include "ImApp/Utility/String.h"
-#include "ImApp/NativeWindow/Window.h"
+#include "NativeWindow/WindowsInclude.h"
+#include "NativeWindow/Utility/String.h"
+#include "NativeWindow/Window.h"
 
 #include <iostream>
 #include <vector>

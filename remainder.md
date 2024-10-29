@@ -1,0 +1,5 @@
+- Event OnResize.
+- Test CursorLimitedInWindow.
+- Windows message stack mode? Replace PeekMessage by GetMessage?
+- Add a logger.
+- Move native window outside to be a single lib?

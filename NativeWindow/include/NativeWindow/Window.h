@@ -7,7 +7,7 @@
 
 #include "WindowStyle.h"
 #include "WindowState.h"
-#include "ImApp/Utility/NonCopyable.h"
+#include "NativeWindow/Utility/NonCopyable.h"
 
 namespace NativeWindow
 {
