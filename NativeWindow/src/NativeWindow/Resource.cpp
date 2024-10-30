@@ -7,7 +7,7 @@ namespace NativeWindow
     template<>
     DataResource Resource::LoadResource(int id)
     {
-        const HINSTANCE hInst = GetModuleHandleW(nullptr);
+        const HINSTANCE hInst = ::GetModuleHandleW(nullptr);
 
         const HRSRC findRes = ::FindResourceW(hInst, MAKEINTRESOURCE(id), RT_RCDATA);
         if (findRes != nullptr)
@@ -17,17 +17,17 @@ namespace NativeWindow
         if (mem != nullptr)
             return { nullptr, 0 };
 
-        const auto pData = LockResource(mem);
+        const auto pData = ::LockResource(mem);
         if (!pData)
             return { nullptr, 0 };
 
-        return { pData, (uint32_t)SizeofResource(hInst, findRes) };
+        return { pData, static_cast<uint32_t>(::SizeofResource(hInst, findRes)) };
     }
 
     template<>
     IconResource Resource::LoadResource(int id)
     {
-        const auto hIcon = ::LoadIconW(GetModuleHandleW(nullptr), MAKEINTRESOURCE(id));
+        const auto hIcon = ::LoadIconW(::GetModuleHandleW(nullptr), MAKEINTRESOURCE(id));
         if (hIcon == nullptr)
             return { nullptr };
 
@@ -37,7 +37,7 @@ namespace NativeWindow
     template<>
     BitmapResource Resource::LoadResource(int id)
     {
-        const auto hBitmap = ::LoadBitmapW(GetModuleHandleW(nullptr), MAKEINTRESOURCE(id));
+        const auto hBitmap = ::LoadBitmapW(::GetModuleHandleW(nullptr), MAKEINTRESOURCE(id));
         if (hBitmap == nullptr)
             return { nullptr };
 
@@ -47,7 +47,7 @@ namespace NativeWindow
     template<>
     CursorResource Resource::LoadResource(int id)
     {
-        const auto hCursor = ::LoadCursorW(GetModuleHandleW(nullptr), MAKEINTRESOURCE(id));
+        const auto hCursor = ::LoadCursorW(::GetModuleHandleW(nullptr), MAKEINTRESOURCE(id));
         if (hCursor == nullptr)
             return { nullptr };
 
