@@ -83,8 +83,8 @@ namespace NativeWindow
         // Create window state
         _pWindowState = std::make_unique<WindowState>();
         _pWindowState->hWindow = hWindow;
-        _pWindowState->width = width;
-        _pWindowState->height = height;
+        _pWindowState->lastWidth = width;
+        _pWindowState->lastHeight = height;
 
         // Cursor
         _pWindowState->hCursor = ::LoadCursor(nullptr, IDC_ARROW);
@@ -518,12 +518,12 @@ namespace NativeWindow
             }
             case WM_SIZE:
             {
-                auto newSize = GetSize();
-                if (wParam != SIZE_MINIMIZED && (_pWindowState->width != newSize.first || _pWindowState->height != newSize.second))
+                auto [newWidth, newHeight] = GetSize();
+                if (wParam != SIZE_MINIMIZED && (_pWindowState->lastWidth != newWidth || _pWindowState->lastHeight != newHeight))
                 {
-                    _pWindowState->width = newSize.first;
-                    _pWindowState->height = newSize.second;
-                    OnWindowResize(_pWindowState->width, _pWindowState->height);
+                    _pWindowState->lastWidth = newWidth;
+                    _pWindowState->lastHeight = newHeight;
+                    OnWindowResize(_pWindowState->lastWidth, _pWindowState->lastHeight);
                 }
                 break;
             }

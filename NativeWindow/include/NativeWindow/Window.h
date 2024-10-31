@@ -38,7 +38,7 @@ namespace NativeWindow
         /// @param windowDestroyed True is window destroyed after message process.
         void EventLoop(bool* windowDestroyed);
 
-        /// Get native window's size.
+        /// Get native window's size(client area, without borders, caption bar, etc.).
         std::pair<int, int> GetSize();
 
         /// Set native window's size.
