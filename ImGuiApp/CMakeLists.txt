@@ -13,14 +13,15 @@ file (GLOB_RECURSE IMGUI_SRC
         ./thirdparty/imgui/backends/imgui_impl_vulkan.cpp
 )
 
-# No need vulkan library anymore, use glad-vulkan instead
-# find_package(Vulkan REQUIRED)
+find_package(Vulkan REQUIRED)
 
 add_library                 (imgui_win_app_framework STATIC ${IMGUI_APP_FRAMEWORK_SRC} ${IMGUI_SRC})
 target_include_directories  (imgui_win_app_framework PUBLIC ./include/)
 target_include_directories  (imgui_win_app_framework PUBLIC ./thirdparty/imgui/)
 target_include_directories  (imgui_win_app_framework PUBLIC ./thirdparty/glad/)
 target_link_libraries       (imgui_win_app_framework PUBLIC native_window)
+target_link_libraries       (imgui_win_app_framework PUBLIC Vulkan::Vulkan)
+target_compile_definitions  (imgui_win_app_framework PUBLIC VK_USE_PLATFORM_WIN32_KHR)
 
 option (ENABLE_IMGUI_WIN_APP_DEMO OFF)
 

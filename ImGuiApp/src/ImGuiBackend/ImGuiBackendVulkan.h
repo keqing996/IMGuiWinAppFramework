@@ -3,7 +3,6 @@
 #include <array>
 #include <vector>
 #include <backends/imgui_impl_vulkan.h>
-#include "Vulkan/VulkanInclude.h"
 #include "ImApp/ImGuiBackend/ImGuiBackend.h"
 
 namespace ImApp
@@ -39,8 +38,6 @@ namespace ImApp
         std::array<float, 4> _clearColor = { 0.75f, 0.75f, 0.75f, 1.00f };
 
         bool vulkanAvailable = true;
-        int _vkVersionMajor = 0;
-        int _vkVersionMinor = 0;
 
         VkInstance                  _vkInstance = nullptr;
         VkDebugReportCallbackEXT    _vkDebugReportCallbackExt = nullptr;

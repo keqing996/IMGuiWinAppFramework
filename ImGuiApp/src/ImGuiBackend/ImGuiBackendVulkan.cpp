@@ -14,21 +14,8 @@ namespace ImApp
 
     void ImGuiBackendVulkan::SetupDevice()
     {
-        // Glad load vulkan functions.
-        int vkVersion = ::gladLoaderLoadVulkan(nullptr, nullptr, nullptr);
-        if (vkVersion == 0)
-        {
-            vulkanAvailable = false;
-            return;
-        }
-
-        _vkVersionMajor = GLAD_VERSION_MAJOR(vkVersion);
-        _vkVersionMinor = GLAD_VERSION_MINOR(vkVersion);
-
         if (vulkanAvailable)
             VulkanInitInstance();
-
-        ::gladLoaderLoadVulkan(_vkInstance, nullptr, nullptr);
 
         if (vulkanAvailable)
             VulkanInitDebugReportCallbackExt();
@@ -39,15 +26,11 @@ namespace ImApp
         if (vulkanAvailable)
             VulkanInitPhysicsDevice();
 
-        ::gladLoaderLoadVulkan(_vkInstance, _vkPhysicalDevice, nullptr);
-
         if (vulkanAvailable)
             VulkanInitDepthFormat();
 
         if (vulkanAvailable)
             VulkanInitLogicDevice();
-
-        ::gladLoaderLoadVulkan(_vkInstance, _vkPhysicalDevice, _vkLogicDevice);
 
         if (vulkanAvailable)
             VulkanInitSwapChainFormat();
