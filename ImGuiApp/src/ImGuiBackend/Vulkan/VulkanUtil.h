@@ -1,8 +1,7 @@
 #pragma once
 
-#include <iostream>
 #include <vector>
-#include "VulkanInclude.h"
+#include <vulkan/vulkan.h>
 
 namespace ImApp
 {
